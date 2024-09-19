@@ -1,4 +1,24 @@
 {
   "name": "coin-dc-bot",
-  "packageManager": "yarn@4.2.2"
+  "packageManager": "yarn@4.2.2",
+  "scripts": {
+    "dev": "tsx src/main.ts"
+  },
+  "dependencies": {
+    "@langchain/anthropic": "^0.3.1",
+    "@langchain/core": "^0.3.2",
+    "@langchain/langgraph": "^0.2.4",
+    "@langchain/openai": "^0.3.0",
+    "dotenv": "^16.4.5",
+    "node-upbit": "^1.2.0",
+    "zod": "^3.23.8"
+  },
+  "resolutions": {
+    "@langchain/core": "0.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.5",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
+  }
 }
