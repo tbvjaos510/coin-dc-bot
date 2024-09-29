@@ -111,7 +111,7 @@ const buyCoin = tool(async ({ marketCoin, price }) => {
 
   return `매수 주문 결과:
 마켓: ${result.market}
-채결금: ${Math.floor(Number(result.executed_funds))}원
+채결금: ${Math.round(Number(result.executed_funds))}원
 `;
 }, {
   name: "buy_coin",
@@ -130,7 +130,7 @@ const sellCoin = tool(async ({ marketCoin, volume }) => {
 
   return `매도 주문 결과:
 마켓: ${result.market}
-채결금: ${Math.floor(Number(result.executed_funds))}원
+채결금: ${Math.round(Number(result.executed_funds))}원
   `;
 }, {
   name: "sell_coin",
