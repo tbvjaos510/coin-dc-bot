@@ -10,7 +10,8 @@
     "@langchain/langgraph": "^0.2.4",
     "@langchain/openai": "^0.3.0",
     "dotenv": "^16.4.5",
-    "node-upbit": "^1.2.0",
+    "node-upbit": "patch:node-upbit@npm%3A1.2.0#~/.yarn/patches/node-upbit-npm-1.2.0-921caabd83.patch",
+    "query-string": "^9.1.0",
     "zod": "^3.23.8"
   },
   "resolutions": {

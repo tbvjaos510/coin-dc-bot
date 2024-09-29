@@ -525,7 +525,8 @@ __metadata:
     "@langchain/openai": "npm:^0.3.0"
     "@types/node": "npm:^22.5.5"
     dotenv: "npm:^16.4.5"
-    node-upbit: "npm:^1.2.0"
+    node-upbit: "patch:node-upbit@npm%3A1.2.0#~/.yarn/patches/node-upbit-npm-1.2.0-921caabd83.patch"
+    query-string: "npm:^9.1.0"
     tsx: "npm:^4.19.1"
     typescript: "npm:^5.6.2"
     zod: "npm:^3.23.8"
@@ -591,6 +592,13 @@ __metadata:
   version: 1.2.0
   resolution: "decamelize@npm:1.2.0"
   checksum: 10c0/85c39fe8fbf0482d4a1e224ef0119db5c1897f8503bcef8b826adff7a1b11414972f6fef2d7dec2ee0b4be3863cf64ac1439137ae9e6af23a3d8dcbe26a5b4b2
+  languageName: node
+  linkType: hard
+
+"decode-uri-component@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "decode-uri-component@npm:0.4.1"
+  checksum: 10c0/a180bbdb5398ec8270d236a3ac07cb988bbf6097428481780b85840f088951dc0318a8d8f9d56796e1a322b55b29859cea29982f22f9b03af0bc60974c54e591
   languageName: node
   linkType: hard
 
@@ -780,6 +788,13 @@ __metadata:
   bin:
     fxparser: src/cli/cli.js
   checksum: 10c0/71d206c9e137f5c26af88d27dde0108068a5d074401901d643c500c36e95dfd828333a98bda020846c41f5b9b364e2b0e9be5b19b0bdcab5cf31559c07b80a95
+  languageName: node
+  linkType: hard
+
+"filter-obj@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "filter-obj@npm:5.1.0"
+  checksum: 10c0/716e8ad2bc352e206556b3e5695b3cdff8aab80c53ea4b00c96315bbf467b987df3640575100aef8b84e812cf5ea4251db4cd672bbe33b1e78afea88400c67dd
   languageName: node
   linkType: hard
 
@@ -1342,7 +1357,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-upbit@npm:^1.2.0":
+"node-upbit@npm:1.2.0":
   version: 1.2.0
   resolution: "node-upbit@npm:1.2.0"
   dependencies:
@@ -1350,6 +1365,17 @@ __metadata:
     jsonwebtoken: "npm:^8.5.1"
     uuid: "npm:^8.3.2"
   checksum: 10c0/4aed666dfa858fdcebd7b9b45ae894154a08c19e8086d90a9be35fdf5d785a0f957cfc7893637348130c944560e111308f81b5e82dc502e63c1c8164005dd88a
+  languageName: node
+  linkType: hard
+
+"node-upbit@patch:node-upbit@npm%3A1.2.0#~/.yarn/patches/node-upbit-npm-1.2.0-921caabd83.patch":
+  version: 1.2.0
+  resolution: "node-upbit@patch:node-upbit@npm%3A1.2.0#~/.yarn/patches/node-upbit-npm-1.2.0-921caabd83.patch::version=1.2.0&hash=b6b7d1"
+  dependencies:
+    axios: "npm:^1.4.0"
+    jsonwebtoken: "npm:^8.5.1"
+    uuid: "npm:^8.3.2"
+  checksum: 10c0/3f50528d40fa868307a4ae80942ad83b52c02b036f33de6d750ea614685d9c880ddc7bed2b96e8cc69d9e696a139dfd264c9d12e128865f64fe65f81f8a07096
   languageName: node
   linkType: hard
 
@@ -1479,6 +1505,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"query-string@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "query-string@npm:9.1.0"
+  dependencies:
+    decode-uri-component: "npm:^0.4.1"
+    filter-obj: "npm:^5.1.0"
+    split-on-first: "npm:^3.0.0"
+  checksum: 10c0/45aed8f932c350b0d489455700f25960b748247072d7c1e231cc7ac52af54014b7e380ee1b76dd939e767feeacc5bc48130e8c97a440c039fd3ded9fc9e7fbc4
+  languageName: node
+  linkType: hard
+
 "resolve-pkg-maps@npm:^1.0.0":
   version: 1.0.0
   resolution: "resolve-pkg-maps@npm:1.0.0"
@@ -1580,6 +1617,13 @@ __metadata:
     ip-address: "npm:^9.0.5"
     smart-buffer: "npm:^4.2.0"
   checksum: 10c0/d54a52bf9325165770b674a67241143a3d8b4e4c8884560c4e0e078aace2a728dffc7f70150660f51b85797c4e1a3b82f9b7aa25e0a0ceae1a243365da5c51a7
+  languageName: node
+  linkType: hard
+
+"split-on-first@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "split-on-first@npm:3.0.0"
+  checksum: 10c0/a1262eae12b68de235e1a08e011bf5b42c42621985ddf807e6221fb1e2b3304824913ae7019f18436b96b8fab8aef5f1ad80dedd2385317fdc51b521c3882cd0
   languageName: node
   linkType: hard
 

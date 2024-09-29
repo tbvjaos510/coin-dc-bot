@@ -1,0 +1,36 @@
+diff --git a/lib/service/AuthorizationToken.js b/lib/service/AuthorizationToken.js
+index dd4fa28c978bc9592cf2c80aedb3ce751586e3a6..cb0a517ce0747ce7bfe9de9068e9be0f57b9e53f 100644
+--- a/lib/service/AuthorizationToken.js
++++ b/lib/service/AuthorizationToken.js
+@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
+ Object.defineProperty(exports, "__esModule", { value: true });
+ const crypto_1 = __importDefault(require("crypto"));
+ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+-const querystring_1 = __importDefault(require("querystring"));
++const querystring_1 = __importDefault(require("query-string"));
+ const uuid_1 = require("uuid");
+ class AuthorizationToken {
+     constructor(UBIT_ACCESS_KEY, UBIT_SECRET_KEY) {
+@@ -34,7 +34,7 @@ class AuthorizationToken {
+         if (!this.Validation()) {
+             throw new Error("업비트 ACCESS_KEY 또는 SECRET_KEY를 확인하십시오.");
+         }
+-        const query = querystring_1.default.encode(params);
++        const query = querystring_1.default.stringify(params, {arrayFormat: 'bracket'});
+         const hash = crypto_1.default.createHash("sha512");
+         const queryHash = hash.update(query, "utf-8").digest("hex");
+         const payload = {
+diff --git a/package.json b/package.json
+index 79dedc2cafbfa5dcfc2a6a3a772a713c73485df5..42223f755f4b7d0e822e51f53fac7529f6c040af 100644
+--- a/package.json
++++ b/package.json
+@@ -42,7 +42,8 @@
+   "dependencies": {
+     "axios": "^1.4.0",
+     "jsonwebtoken": "^8.5.1",
+-    "uuid": "^8.3.2"
++    "uuid": "^8.3.2",
++    "query-string": "^9.1.0"
+   },
+   "engines": {
+     "node": ">=12.20.1"

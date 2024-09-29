@@ -1,30 +1,55 @@
 import "dotenv/config";
-import {BaseMessage} from "@langchain/core/messages";
-import {Annotation, MemorySaver} from "@langchain/langgraph";
-import {upbitAccountTools} from "./tools/upbit-account";
-import {ChatOpenAI} from '@langchain/openai';
-import {createReactAgent} from "@langchain/langgraph/prebuilt";
+import { upbitAccountTools } from "./tools/upbit-account";
+import { ChatOpenAI } from "@langchain/openai";
+import { createReactAgent } from "@langchain/langgraph/prebuilt";
+import { communityTools } from "./tools/community";
+import { SYSTEM_MESSAGE, USER_MESSAGE } from "./messages";
 
-const GraphAnnotation = Annotation.Root({
-  // Define a 'messages' channel to store an array of BaseMessage objects
-  messages: Annotation<BaseMessage[]>({
-    // Reducer function: Combines the current state with new messages
-    reducer: (currentState, updateValue) => currentState.concat(updateValue),
-    // Default function: Initialize the channel with an empty array
-    default: () => [],
-  })
-});
+const DISCORD_WEBHOOK = process.env.DISCORD_WEBHOOK;
 
 const agentTools = [
-  ...upbitAccountTools
-]
-const agentModel = new ChatOpenAI({temperature: 0})
-
-const agentCheckpointer = new MemorySaver();
+  ...upbitAccountTools,
+  ...communityTools,
+];
+const agentModel = new ChatOpenAI({ temperature: 0, model: "gpt-4o-mini" });
 
 export const graph = createReactAgent({
   llm: agentModel,
   tools: agentTools,
-  checkpointSaver: agentCheckpointer,
+  messageModifier: SYSTEM_MESSAGE,
 });
+
+const main = async () => {
+  const result = await graph.stream({
+    messages: [
+      USER_MESSAGE,
+    ],
+  }, { streamMode: "values" });
+
+  let lastMessages = [];
+  for await (const { messages } of result) {
+    console.log(messages);
+
+    lastMessages = messages;
+  }
+
+  if (DISCORD_WEBHOOK) {
+    const lastMessage = lastMessages[lastMessages.length - 1];
+
+    if (lastMessage) {
+      await fetch(DISCORD_WEBHOOK, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: lastMessage.content,
+        }),
+      });
+    }
+  }
+};
+
+main();
+
 
