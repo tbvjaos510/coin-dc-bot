@@ -28,10 +28,11 @@ const main = async () => {
 
   let lastMessages = [];
   for await (const { messages } of result) {
-    console.log(messages);
 
     lastMessages = messages;
   }
+
+  console.log(lastMessages);
 
   if (DISCORD_WEBHOOK) {
     const lastMessage = lastMessages[lastMessages.length - 1];
