@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { upbitAccountTools } from "./tools/upbit-account";
+import { getMyAccount, upbitAccountTools } from "./tools/upbit-account";
 import { ChatOpenAI } from "@langchain/openai";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { communityTools } from "./tools/community";
@@ -28,11 +28,11 @@ const main = async () => {
 
   let lastMessages = [];
   for await (const { messages } of result) {
-
     lastMessages = messages;
   }
 
-  console.log(lastMessages);
+
+  const myAccount = await getMyAccount.invoke({});
 
   if (DISCORD_WEBHOOK) {
     const lastMessage = lastMessages[lastMessages.length - 1];
@@ -44,7 +44,7 @@ const main = async () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          content: lastMessage.content,
+          content: lastMessage.content + "\n" + myAccount,
         }),
       });
     }

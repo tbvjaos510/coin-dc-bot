@@ -23,7 +23,7 @@ ${mapMarkets.map(market => `${market.market}: ${market.korean_name} / `).join("\
   description: "가상화폐 마켓 조회",
 });
 
-const getMyAccount = tool(async () => {
+export const getMyAccount = tool(async () => {
   const accounts = await ubitExchangeService.getAllAccount();
   const tickers = await ubitQuoationService.getTickerAll(['KRW']);
   const krwAccount = accounts.find(account => account.currency === "KRW");
@@ -74,7 +74,7 @@ ${mapAccounts.map(account => `${account.market}:
   수익률: ${account.change_rate}`).join("\n---------\n")}`;
 }, {
   name: "get_my_account",
-  description: "내 계좌 조회",
+  description: "내 계좌(포트폴리오) 조회",
 });
 
 const getMinutesCandles = tool(async ({ marketCoin, count }) => {
@@ -118,7 +118,7 @@ const buyCoin = tool(async ({ marketCoin, price }) => {
   description: "매수 주문 (시장가)",
   schema: z.object({
     marketCoin: z.string({ description: "마켓 코인 (KRW- 로 시작)" }),
-    price: z.number({ description: "매수 가격 (50000원 이상)" }),
+    price: z.number({ description: "매수 가격 (200,000원 이상)" }),
   }),
 });
 

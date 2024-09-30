@@ -14,7 +14,6 @@ export class DcInsideApi {
     }
 
     const data = await response.json();
-    console.log(data);
 
     return data[0].gall_list;
   }
