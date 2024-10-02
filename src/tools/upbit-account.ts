@@ -60,7 +60,7 @@ export const getMyAccount = tool(async () => {
     };
   });
 
-  const totalBalance = Math.floor(mapAccounts.reduce((acc, account) => acc + account.current_price, 0));
+  const totalBalance = Math.floor(mapAccounts.reduce((acc, account) => acc + account.current_price, 0) + Number(krwAccount?.balance));
 
   return `
 총 자산 (가상화폐 포함): ${totalBalance}원
