@@ -137,7 +137,7 @@ const sellCoin = tool(async ({ marketCoin, volume }) => {
   description: "매도 주문 (시장가)",
   schema: z.object({
     marketCoin: z.string({ description: "마켓 코인 (KRW- 로 시작)" }),
-    volume: z.number({ description: "매도량" }),
+    volume: z.number({ description: "매도 코인 수 (개)" }),
   }),
 });
 
