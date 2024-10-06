@@ -38,6 +38,7 @@ class CoinDcBotStack extends cdk.Stack {
       memoryLimitMiB: 256,
       environment: {
         MONGO_URI: "mongodb://localhost:27017",
+        TZ: "Asia/Seoul",
       },
       secrets: {
         MONGO_USERNAME: ecs.Secret.fromSecretsManager(mognodbSecret, "username"),
