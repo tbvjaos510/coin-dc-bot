@@ -1,8 +1,7 @@
 import * as cdk from "aws-cdk-lib";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as ecs from "aws-cdk-lib/aws-ecs";
-import * as events from "aws-cdk-lib/aws-events";
-import * as targets from "aws-cdk-lib/aws-events-targets";
+import * as secretsmanager from "aws-cdk-lib/aws-secretsmanager";
 
 import { Construct } from "constructs";
 import { LogGroup } from "aws-cdk-lib/aws-logs";
@@ -30,11 +29,20 @@ class CoinDcBotStack extends cdk.Stack {
       networkMode: ecs.NetworkMode.HOST,
     });
 
+    const mognodbSecret = secretsmanager.Secret.fromSecretNameV2(this, "MongoDbPassword", "MongoDbPassword")
+
     taskDefinition.addContainer("coin-dc-bot-container", {
       image: ecs.ContainerImage.fromAsset(path.join(__dirname, "../"), {
         platform: Platform.LINUX_AMD64,
       }),
-      memoryLimitMiB: 512,
+      memoryLimitMiB: 256,
+      environment: {
+        MONGO_URI: "mongodb://localhost:27017",
+      },
+      secrets: {
+        MONGO_USERNAME: ecs.Secret.fromSecretsManager(mognodbSecret, "username"),
+        MONGO_PASSWORD: ecs.Secret.fromSecretsManager(mognodbSecret, "password"),
+      },
       logging: new ecs.AwsLogDriver({
         streamPrefix: serviceName,
         logGroup: new LogGroup(this, "coin-dc-bot-log-group", {
@@ -44,17 +52,15 @@ class CoinDcBotStack extends cdk.Stack {
       }),
     });
 
-    const rule = new events.Rule(this, "coin-dc-bot-rule", {
-      schedule: events.Schedule.cron({
-        minute: '0',
-        hour: '15,21,3,9', // UTC 기준으로 0시, 6시, 12시, 18시
-      }),
-    });
-
-    rule.addTarget(new targets.EcsTask({
+    const ecsService = new ecs.Ec2Service(this, "coin-dc-bot-service", {
+      serviceName,
       cluster,
       taskDefinition,
-    }))
+      desiredCount: 1,
+      circuitBreaker: {
+        rollback: true
+      },
+    });
   }
 }
 

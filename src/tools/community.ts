@@ -24,7 +24,7 @@ ${searchResult.board.map(post => `제목: ${post.title} / 내용: ${post.content
   name: "search_dcinside_community_posts",
   description: "디시인사이드 커뮤니티 게시글 검색. 코인 이름을 포함해주세요",
   schema: z.object({
-    keyword: z.string({ description: "검색어 (한국어로)" }),
+    keyword: z.string({ description: "검색어 (한글로)" }),
   }),
 });
 

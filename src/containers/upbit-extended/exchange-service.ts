@@ -1,19 +1,11 @@
 import { ExchangeService } from "node-upbit";
 
-interface OrderResult {
+export interface OrderResult {
   uuid: string;
-  side: string;
-  ord_type: string;
   price: string;
   state: "wait" | "done" | "cancel";
   market: string;
-  created_at: string;
   volume: string;
-  remaining_volume: string;
-  reserved_fee: string;
-  remaining_fee: string;
-  paid_fee: string;
-  locked: string;
   executed_volume: string;
   executed_funds: string;
 }
