@@ -1,5 +1,6 @@
 import { IUser, User } from "../models/users";
 import { ExtendedExchangeService } from "../containers/upbit-extended/exchange-service";
+import { prettyMyAccount } from "../tools/upbit-account";
 
 export class UserController {
   async getUser(id: string): Promise<IUser | null> {
@@ -11,11 +12,11 @@ export class UserController {
       return null;
     }
 
-    return user.toObject()
+    return user.toObject();
   }
 
   async upsertUser(user: Partial<IUser>) {
-    if (user.upbitApiKey ||user.upbitSecretKey) {
+    if (user.upbitApiKey || user.upbitSecretKey) {
       const exchangeService = new ExtendedExchangeService(user.upbitApiKey || "", user.upbitSecretKey || "");
 
       try {
@@ -38,7 +39,7 @@ export class UserController {
       },
       {
         upsert: true,
-      }
+      },
     );
   }
 
@@ -46,5 +47,35 @@ export class UserController {
     await User.deleteOne({
       userId: id,
     });
+  }
+
+  async getTradeUserChannels() {
+    return User.find({
+      upbitApiKey: { $ne: null },
+      upbitSecretKey: { $ne: null },
+    }).distinct("channelId");
+  }
+
+  async getTradingList(channelId: string) {
+    const users = await User.find({
+      channelId,
+      upbitApiKey: { $ne: null },
+      upbitSecretKey: { $ne: null },
+    }).lean();
+
+    return Promise.all(users.map(async user => {
+      const exchangeService = new ExtendedExchangeService(user.upbitApiKey!, user.upbitSecretKey!);
+
+      const account = await exchangeService.getAllAccount();
+
+      const totalBalance = (await prettyMyAccount(account)).total_balance || user.initialBalance
+
+      return {
+        user,
+        totalBalance,
+        initialPrice: user.initialBalance,
+        rate: Math.floor((totalBalance / user.initialBalance) * 100) - 100,
+      }
+    })).then(result => result.sort((a, b) => b.rate - a.rate));
   }
 }

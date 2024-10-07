@@ -44,7 +44,10 @@ export const prettyMyAccount = async (accounts: IAccountProps[]) => {
 
   const totalBalance = Math.floor(mapAccounts.reduce((acc, account) => acc + account.current_price, 0) + Number(krwAccount?.balance));
 
-  return `
+  return {
+    total_balance: totalBalance,
+    accounts: mapAccounts,
+    message: `
 총 자산 (가상화폐 포함): ${totalBalance}원
 현재 원화 계좌 잔고: ${Math.floor(Number(krwAccount?.balance))}원
 
@@ -53,7 +56,8 @@ ${mapAccounts.map(account => `${account.market}:
   보유량: ${account.balance}개
   구매 가격: ${account.buy_price}원
   현재 가격: ${account.current_price}원
-  수익률: ${account.change_rate}`).join("\n---------\n")}`;
+  수익률: ${account.change_rate}`).join("\n---------\n")}`
+  };
 };
 
 
@@ -82,7 +86,7 @@ ${mapMarkets.map(market => `${market.market}: ${market.korean_name} / `).join("\
   const getMyAccount = tool(async () => {
     const accounts = await ubitExchangeService.getAllAccount();
 
-    return await prettyMyAccount(accounts);
+    return (await prettyMyAccount(accounts)).message;
   }, {
     name: "get_my_account",
     description: "내 가상화폐 및 원화 자산 조회",

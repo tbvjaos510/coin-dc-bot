@@ -32,13 +32,13 @@ discordClient.on("messageCreate", async (message) => {
     });
   }
 
-  if (message.content === "지금당장진짜트레이딩할래!" || message.content === "지금당장테스트트레이딩할래!") {
-    const isTest = message.content === "지금당장테스트트레이딩할래!";
+  if (message.content === "진짜트레이딩할래!" || message.content === "테스트트레이딩할래!") {
+    const isTest = message.content === "테스트트레이딩할래!";
     const user = await userController.getUser(message.author.id);
 
     if (!user) {
       await message.reply({
-        content: "유저 정보를 먼저 등록해주세요.",
+        content: "유저 정보를 먼저 등록해주세요. (채팅에 '트레이딩시작할래!'를 입력해주세요.)",
       });
 
       return;
@@ -48,7 +48,7 @@ discordClient.on("messageCreate", async (message) => {
 
     if (!prompt) {
       await message.reply({
-        content: "프롬프트 정보를 먼저 등록해주세요.",
+        content: "프롬프트 정보를 먼저 등록해주세요. (채팅에 '트레이딩시작할래!'를 입력해주세요.)",
       });
 
       return;
@@ -62,10 +62,10 @@ discordClient.on("messageCreate", async (message) => {
       const {
         lastMessageContent,
         account,
-      } = await tradingController.executeTrading(prompt._id, message.content === "지금당장테스트트레이딩할래!");
+      } = await tradingController.executeTrading(prompt._id, message.content === "테스트트레이딩할래!");
 
       await reply.edit({
-        content: lastMessageContent + await prettyMyAccount(account),
+        content: lastMessageContent + (await prettyMyAccount(account)).message,
       });
     } catch (error: any) {
       await reply.edit({
@@ -99,7 +99,7 @@ discordClient.on("interactionCreate", async (interaction) => {
 
       interaction.showModal(createPromptSettingModel(prompt ? {
         ...prompt,
-        cronTime: prompt.cronTime ? /0 0 (\d+,\d+,\d+,\d+) \* \* \*/.exec(prompt.cronTime)?.[1] : "0,6,12,18",
+        cronTime: prompt.cronTime ? /0 0 ([\d,]+) \* \* \*/.exec(prompt.cronTime)?.[1] : "0,6,12,18",
       } : undefined));
     }
     if (interaction.customId === "remove_user_setting") {
@@ -164,7 +164,7 @@ discordClient.on("interactionCreate", async (interaction) => {
 
         if (!user) {
           await interaction.reply({
-            content: "유저 정보를 먼저 등록해주세요.",
+            content: "유저 정보를 먼저 등록해주세요. (채팅에 '트레이딩시작할래!'를 입력해주세요.)",
             ephemeral: true,
           });
 
@@ -185,9 +185,14 @@ discordClient.on("interactionCreate", async (interaction) => {
         });
 
         await interaction.reply({
-          content: "프롬프트 정보 등록이 완료되었습니다. 정해진 시간에 매매가 진행됩니다. 혹은 '지금당장진짜트레이딩할래!'나 '지금당장테스트트레이딩할래!'를 입력해주세요.",
+          content: `<@${interaction.user.id}>님의 프롬프트 정보 등록이 완료되었습니다.\n시스템 프롬프트: \`\`\`${interaction.fields.getTextInputValue("system_message")}\`\`\`\n유저 프롬프트: \`\`\`${interaction.fields.getTextInputValue("user_message")}\`\`\`\n시간: ${cronTime || "없음"}`,
+        })
+
+        await interaction.reply({
+          content: "프롬프트 정보 등록이 완료되었습니다. 정해진 시간에 매매가 진행됩니다. 혹은 '진짜트레이딩할래!'나 '테스트트레이딩할래!'를 입력해주세요.",
           ephemeral: true,
         });
+
       } catch (error: any) {
         await interaction.reply({
           content: error.message ?? "알 수 없는 오류가 발생했습니다.",

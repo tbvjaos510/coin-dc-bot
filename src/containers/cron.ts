@@ -26,6 +26,8 @@ class TradingCron {
       //   first.task.now();
       // }, 3000)
     });
+
+    this.startTradeRankCron();
   }
 
   addTradeCron(tradeId: string, cronTime: string) {
@@ -33,6 +35,10 @@ class TradingCron {
       tradeIds: [],
       task: this.startCron(cronTime),
     };
+
+    if (this.crons[cronTime].tradeIds.includes(tradeId)) {
+      return;
+    }
 
     this.crons[cronTime].tradeIds.push(tradeId);
   }
@@ -46,10 +52,31 @@ class TradingCron {
     }
   }
 
+  private startTradeRankCron() {
+    const task = cron.schedule("0 0 * * *", async () => {
+      const channels = await userController.getTradeUserChannels();
+
+      for (const channelId of channels) {
+        const trades = await userController.getTradingList(channelId);
+
+        const message = await this.client.channels.fetch(channelId);
+
+        if (message?.type === ChannelType.GuildText) {
+          await message.send(`*트레이딩 순위*\n\n${trades.map((trade, index) => `${index + 1}위: <@${trade.user.userId}> - 수익율 ${trade.rate}% (${trade.totalBalance}원)`).join("\n")}`);
+        }
+
+      }
+    }, {
+      timezone: "Asia/Seoul",
+    });
+
+    task.start();
+  }
+
   private startCron(cronTime: string) {
     const task = cron.schedule(cronTime, async () => {
       const { tradeIds } = this.crons[cronTime];
-      console.log('task start', cronTime, tradeIds);
+      console.log("task start", cronTime, tradeIds);
       const channelIds: Record<string, PublicThreadChannel> = {};
 
       for (const tradeId of tradeIds) {
@@ -97,7 +124,7 @@ class TradingCron {
           const { lastMessageContent, account } = await tradingController.executeTrading(tradeId, false);
 
           await message.edit({
-            content: lastMessageContent + await prettyMyAccount(account) + ` <@${user.userId}>`,
+            content: lastMessageContent + (await prettyMyAccount(account)).message + ` <@${user.userId}>`,
           });
         } catch (error: any) {
           await message.edit({
