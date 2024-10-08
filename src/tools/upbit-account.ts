@@ -48,8 +48,8 @@ export const prettyMyAccount = async (accounts: IAccountProps[]) => {
     total_balance: totalBalance,
     accounts: mapAccounts,
     message: `
-총 자산 (가상화폐 포함): ${totalBalance}원
-현재 원화 계좌 잔고: ${Math.floor(Number(krwAccount?.balance))}원
+총 자산 (가상화폐 포함): ${totalBalance.toLocaleString()}원
+현재 원화 계좌 잔고: ${Math.floor(Number(krwAccount?.balance)).toLocaleString()}원
 
 보유 가상화폐:
 ${mapAccounts.map(account => `${account.market}:

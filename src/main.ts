@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { ButtonStyle, Client } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Client } from "discord.js";
 import { createInlineButton } from "./discord/create-inline-button";
 import { initMongoDB } from "./models";
 import { createUserSettingModel } from "./discord/create-user-setting-model";
@@ -22,12 +22,26 @@ discordClient.on("ready", () => {
 
 discordClient.on("messageCreate", async (message) => {
   if (message.content === "트레이딩시작할래!") {
+    const buttonGroup = new ActionRowBuilder<ButtonBuilder>();
+    buttonGroup.addComponents(
+      new ButtonBuilder()
+        .setCustomId("open_user_setting_modal")
+        .setLabel("유저 정보 등록")
+        .setStyle(ButtonStyle.Primary),
+      new ButtonBuilder()
+        .setCustomId("open_prompt_setting_modal")
+        .setLabel("프롬프트 정보 등록")
+        .setStyle(ButtonStyle.Primary),
+      new ButtonBuilder()
+        .setCustomId("remove_user_setting")
+        .setLabel("유저 & 프롬프트 정보 삭제")
+        .setStyle(ButtonStyle.Danger),
+    )
+
     await message.reply({
       content: "매매를 위해 필요한 정보를 등록해주세요.\n유저 정보 등록을 먼저 한 후, 프롬프트 정보 등록을 해주세요.",
       components: [
-        createInlineButton("유저 정보 등록", "open_user_setting_modal"),
-        createInlineButton("프롬프트 정보 등록", "open_prompt_setting_modal"),
-        createInlineButton("유저 & 프롬프트 정보 삭제", "remove_user_setting", ButtonStyle.Danger),
+        buttonGroup
       ],
     });
   }
@@ -72,6 +86,26 @@ discordClient.on("messageCreate", async (message) => {
         content: error.message ?? "알 수 없는 오류가 발생했습니다.",
       });
     }
+  }
+
+  if (message.content.startsWith('<@') && message.content.endsWith('투자정보!')) {
+    const targetUserId = message.mentions.users.first()?.id || message.author.id;
+
+    const account = await tradingController.getTradeAccount(targetUserId);
+
+    if (!account) {
+      await message.reply({
+        content: "해당 유저의 정보가 없습니다.",
+      });
+
+      return;
+    }
+
+    const prettyAccount = await prettyMyAccount(account);
+
+    await message.reply({
+      content: `<@${targetUserId}>님의 계좌 정보입니다.\n${prettyAccount.message}`,
+    });
   }
 });
 
@@ -179,18 +213,17 @@ discordClient.on("interactionCreate", async (interaction) => {
         }
 
         await tradingController.upsertTradeInfo(interaction.user.id, {
-          systemMessage: interaction.fields.getTextInputValue("system_message"),
           userMessage: interaction.fields.getTextInputValue("user_message"),
           cronTime: cronTime || undefined,
         });
 
         await interaction.reply({
-          content: `<@${interaction.user.id}>님의 프롬프트 정보 등록이 완료되었습니다.\n시스템 프롬프트: \`\`\`${interaction.fields.getTextInputValue("system_message")}\`\`\`\n유저 프롬프트: \`\`\`${interaction.fields.getTextInputValue("user_message")}\`\`\`\n시간: ${cronTime || "없음"}`,
-        })
+          content: `<@${interaction.user.id}>님의 프롬프트 정보 등록이 완료되었습니다.
+프롬프트: \`\`\`${interaction.fields.getTextInputValue("user_message")}\`\`\`
+시간: ${cronTime || "없음"}
 
-        await interaction.reply({
-          content: "프롬프트 정보 등록이 완료되었습니다. 정해진 시간에 매매가 진행됩니다. 혹은 '진짜트레이딩할래!'나 '테스트트레이딩할래!'를 입력해주세요.",
-          ephemeral: true,
+프롬프트 정보 등록이 완료되었습니다. 정해진 시간에 매매가 진행됩니다. 혹은 '진짜트레이딩할래!'나 '테스트트레이딩할래!'를 입력해주세요.
+`,
         });
 
       } catch (error: any) {

@@ -1,5 +1,5 @@
 import { AiTrading, IAITrading } from "../models/ai-tradings";
-import { User } from "../models/users";
+import { IUser, User } from "../models/users";
 import { ChatOpenAI } from "@langchain/openai";
 import { communityTools } from "../tools/community";
 import { StructuredTool } from "@langchain/core/tools";
@@ -8,6 +8,7 @@ import { getUpbitTools } from "../tools/upbit-account";
 import { MockExchangeService } from "../containers/upbit-extended/mock-exchange-service";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { tradingCron } from "../containers/cron";
+import { SYSTEM_PROMPT } from "../constants/prompt";
 
 
 export class TradingController {
@@ -46,7 +47,7 @@ export class TradingController {
     const agent = createReactAgent({
       llm: this.model,
       tools,
-      messageModifier: tradeInfo.systemMessage,
+      messageModifier: SYSTEM_PROMPT,
     });
 
     const inputs = {
@@ -144,6 +145,22 @@ export class TradingController {
     }
 
     return tradeInfo.toObject();
+  }
+
+  async getTradeAccount(userId: string) {
+    const user = await User.findOne({
+      userId: userId,
+    });
+
+    if (!user || !user.upbitApiKey || !user.upbitSecretKey) {
+      return null;
+    }
+
+    const exchangeService = new ExtendedExchangeService(user.upbitApiKey!, user.upbitSecretKey!);
+
+    const account = await exchangeService.getAllAccount();
+
+    return account;
   }
 
   async getTradeById(tradeId: string) {

@@ -15,19 +15,11 @@ export const createPromptSettingModel = (defaultValue?: Partial<IAITrading>) => 
     .addComponents(
       new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
         new TextInputBuilder()
-          .setCustomId("system_message")
-          .setLabel("시스템 프롬프트")
-          .setStyle(TextInputStyle.Paragraph)
-          .setValue(defaultValue?.systemMessage ?? "")
-          .setMaxLength(300),
-      ),
-      new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-        new TextInputBuilder()
           .setCustomId("user_message")
-          .setLabel("사용자 프롬프트")
+          .setLabel("프롬프트")
           .setStyle(TextInputStyle.Paragraph)
           .setValue(defaultValue?.userMessage ?? "")
-          .setMaxLength(3000)
+          .setMaxLength(4000)
           .setRequired(true),
       ),
       new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(

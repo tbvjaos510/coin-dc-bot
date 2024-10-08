@@ -1,22 +1,34 @@
 import { tool } from "@langchain/core/tools";
 import { DcInsideApi } from "../containers/dcinside/api";
 import { z } from "zod";
+import { CoinPanAPI } from "../containers/coinpan/api";
 
-const api = new DcInsideApi();
+const dcApi = new DcInsideApi();
+const coinpanAPi = new CoinPanAPI();
+
+const getCoinpanPosts = tool(async () => {
+  const posts = await coinpanAPi.getFreeBoardPopularList();
+
+  return posts.map(post => `코인판 커뮤니티 실시간 인기 게시글
+-----
+게시글 제목: ${post.title} / 조회수: ${post.hit}`).join("\n");
+}, {
+  name: "get_coinpan_posts",
+  description: "코인판 실시간 인기 게시글 조회",
+});
 
 const getDcinsidePosts = tool(async () => {
-  const posts = await Promise.all([api.getGalleryList("bitcoins_new1", 1), api.getGalleryList("chartanalysis", 1)]).then(([bitcoins, chartanalysis]) => [...bitcoins, ...chartanalysis]);
-
-  const filteredPosts = posts.sort((a, b) => parseInt(b.hit) - parseInt(a.hit)).slice(0, 25);
-
-  return filteredPosts.map(post => `게시글 제목: ${post.subject} / 조회수: ${post.hit}`).join("\n");
+  const posts = await dcApi.getPopularGalleryList();
+  return posts.map(post => `디씨인사이드 게시글
+-----
+게시글 제목: ${post.subject} / 조회수: ${post.hit}`).join("\n");
 }, {
   name: "get_dcinside_community_posts",
-  description: "디시인사이드 가상화폐 게시판 인기 게시글 조회",
+  description: "디시인사이드 가상화폐 게시판 실시간 인기 게시글 조회",
 });
 
 const searchDcinsidePosts = tool(async ({ keyword }) => {
-  const searchResult = await api.searchPosts(keyword);
+  const searchResult = await dcApi.searchPosts(keyword);
 
   return `${keyword}검색 결과:
 ${searchResult.board.map(post => `제목: ${post.title} / 내용: ${post.content.slice(0, 100)}`).join("\n------\n")}`;
@@ -29,6 +41,7 @@ ${searchResult.board.map(post => `제목: ${post.title} / 내용: ${post.content
 });
 
 export const communityTools = [
+  getCoinpanPosts,
   getDcinsidePosts,
-  searchDcinsidePosts
+  searchDcinsidePosts,
 ];

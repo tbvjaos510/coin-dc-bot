@@ -1,5 +1,4 @@
 import * as crypto from "crypto";
-import { URLSearchParams } from "url";
 
 class AppIdGenerator {
   private static readonly DC_APP_SIGNATURE = "ReOo4u96nnv8Njd7707KpYiIVYQ3FlcKHDJE046Pg6s=";
