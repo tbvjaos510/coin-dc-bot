@@ -1,4 +1,5 @@
 import { ExchangeService } from "node-upbit";
+import { Logger } from "../../utils/logger";
 
 export interface OrderResult {
   uuid: string;
@@ -59,7 +60,7 @@ export class ExtendedExchangeService extends ExchangeService {
 
   catchError(error: any): never {
     if (error?.response?.data?.error?.message) {
-      console.log(error.response.data.error);
+      Logger.error(error.response.data.error);
       throw new Error(error.response.data.error.message);
     }
 

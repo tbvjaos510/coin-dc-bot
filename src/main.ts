@@ -7,6 +7,7 @@ import { createPromptSettingModel } from "./discord/create-prompt-setting-model"
 import { tradingController, userController } from "./controllers";
 import { tradingCron } from "./containers/cron";
 import { prettyMyAccount } from "./tools/upbit-account";
+import { Logger } from "./utils/logger";
 
 const discordClient = new Client({
   intents: ["Guilds", "GuildMessages", "MessageContent", "GuildModeration", "GuildEmojisAndStickers"],
@@ -17,7 +18,7 @@ initMongoDB().then(() => {
 });
 
 discordClient.on("ready", () => {
-  console.log(`Logged in as ${discordClient.user?.tag}!`);
+  Logger.info(`Logged in as ${discordClient.user?.tag}!`);
 });
 
 discordClient.on("messageCreate", async (message) => {

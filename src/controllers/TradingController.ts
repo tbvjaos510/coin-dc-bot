@@ -116,8 +116,12 @@ export class TradingController {
       upsert: true,
     });
 
+    if (exitingTrade?.cronTime) {
+      tradingCron.removeTradeCron((result.upsertedId?.toString() || exitingTrade._id?.toString())!, exitingTrade.cronTime);
+    }
+
     if ((result.upsertedId || exitingTrade) && trade.cronTime) {
-      tradingCron.addTradeCron((result.upsertedId?.toString() || exitingTrade?._id)!, trade.cronTime);
+      tradingCron.addTradeCron((result.upsertedId?.toString() || exitingTrade?._id?.toString())!, trade.cronTime);
     }
   }
 

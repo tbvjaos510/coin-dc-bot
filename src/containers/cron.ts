@@ -2,6 +2,7 @@ import cron from "node-cron";
 import { tradingController, userController } from "../controllers";
 import { ChannelType, Client, PublicThreadChannel } from "discord.js";
 import { prettyMyAccount } from "../tools/upbit-account";
+import { Logger } from "../utils/logger";
 
 class TradingCron {
   private crons: Record<string, {
@@ -16,10 +17,10 @@ class TradingCron {
     await tradingController.getAllTradeInfo().then((tradeInfos) => {
       for (const tradeInfo of tradeInfos) {
         if (tradeInfo.cronTime) {
-          this.addTradeCron(tradeInfo._id, tradeInfo.cronTime);
+          this.addTradeCron(tradeInfo._id.toString(), tradeInfo.cronTime);
         }
       }
-      console.log("init cron success count=" + Object.keys(this.crons).length);
+      Logger.info("init cron success count=" + Object.keys(this.crons).length);
       // const first = Object.values(this.crons)[0];
       //
       // setTimeout(() => {
@@ -36,11 +37,11 @@ class TradingCron {
       task: this.startCron(cronTime),
     };
 
-    if (this.crons[cronTime].tradeIds.includes(tradeId)) {
+    if (this.crons[cronTime].tradeIds.includes(tradeId.toString())) {
       return;
     }
 
-    this.crons[cronTime].tradeIds.push(tradeId);
+    this.crons[cronTime].tradeIds.push(tradeId.toString());
   }
 
   removeTradeCron(tradeId: string, cronTime: string) {
@@ -76,7 +77,7 @@ class TradingCron {
   private startCron(cronTime: string) {
     const task = cron.schedule(cronTime, async () => {
       const { tradeIds } = this.crons[cronTime];
-      console.log("task start", cronTime, tradeIds);
+      Logger.info("task start", cronTime, tradeIds);
       const channelIds: Record<string, PublicThreadChannel> = {};
 
       for (const tradeId of tradeIds) {
@@ -99,7 +100,6 @@ class TradingCron {
         if (!user) {
           continue;
         }
-        console.log(1);
 
         if (!channelIds[user.channelId]) {
           const channel = await this.client.channels.fetch(user.channelId);
@@ -114,7 +114,6 @@ class TradingCron {
             channelIds[user.channelId] = thread as PublicThreadChannel;
           }
         }
-        console.log(channelIds);
 
         const thread = channelIds[user.channelId]!;
 
