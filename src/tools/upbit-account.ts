@@ -156,22 +156,86 @@ ${mapMarkets.map(market => `${market.market}: ${market.korean_name} / `).join("\
       volume,
     });
 
+    const lastAccounts = await ubitExchangeService.getAllAccount();
+    const krAccount = lastAccounts.find(account => account.currency === "KRW");
+
     return `매도 주문 결과:
 마켓: ${result.market}
 채결금: ${Math.round(Number(result.executed_funds))}원
+보유 원화: ${Math.floor(Number(krAccount?.balance))}원
   `;
   }, {
     name: "sell_coin",
-    description: "매도 주문 (시장가)",
+    description: "지정 코인 매도 주문 (시장가)",
     schema: z.object({
       marketCoin: z.string({ description: "마켓 코인 (KRW- 로 시작)" }),
       volumePercent: z.number({ description: "매도 비율 % (1~100)" }).min(1).max(100),
     }),
   });
 
+  const sellCoinsWithCondition = tool(async ({ changeRate, moreOrLess, volumePercent }) => {
+    const accounts = await ubitExchangeService.getAllAccount();
+    const tickers = await ubitQuoationService.getTickerAll(["KRW"]);
+
+    const sellCoins = accounts
+      .filter(account => parseFloat(account.balance) > 0 && account.currency !== "KRW")
+      .map(account => {
+        const ticker = tickers.find(ticker => ticker.market === `KRW-${account.currency}`);
+
+        if (!ticker) {
+          return null;
+        }
+
+        const changeRateValue = (ticker.trade_price - parseFloat(account.avg_buy_price)) / parseFloat(account.avg_buy_price) * 100;
+
+        if (moreOrLess === "more" && changeRateValue > changeRate) {
+          return {
+            market: `KRW-${account.currency}`,
+            volume: parseFloat(account.balance) * volumePercent / 100,
+          };
+        }
+
+        if (moreOrLess === "less" && changeRateValue < changeRate) {
+          return {
+            market: `KRW-${account.currency}`,
+            volume: parseFloat(account.balance) * volumePercent / 100,
+          };
+        }
+
+        return null;
+      }).filter(Boolean) as { market: string, volume: number }[];
+
+    if (sellCoins.length === 0) {
+      return "매도할 코인이 없습니다.";
+    }
+
+    const results = await Promise.all(sellCoins.map(sellCoin => ubitExchangeService.sellOrder({
+      coin: sellCoin.market,
+      volume: sellCoin.volume,
+    })));
+
+    const lastAccounts = await ubitExchangeService.getAllAccount();
+    const krAccount = lastAccounts.find(account => account.currency === "KRW");
+
+    return `조건 매도 주문 결과:
+${results.map(result => `마켓: ${result.market}
+채결금: ${Math.round(Number(result.executed_funds))}원`).join("\n")}
+보유 원화: ${Math.floor(Number(krAccount?.balance))}원
+  `;
+  }, {
+    name: "sell_coins_with_condition",
+    description: "특정 수익률 이하/이상 코인들을 매도합니다. (시장가)",
+    schema: z.object({
+      changeRate: z.number({ description: "조건 매도 수익률 % (-100 ~ 100)" }).min(-100).max(100),
+      moreOrLess: z.enum(["more", "less"]),
+      volumePercent: z.number({ description: "매도 비율 % (1~100)" }).min(1).max(100),
+    }),
+  })
+
   return [
     getMarkets,
     getMyAccount,
+    sellCoinsWithCondition,
     // getMinutesCandles,
     buyCoin,
     sellCoin,
