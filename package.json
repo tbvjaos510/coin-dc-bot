@@ -12,6 +12,7 @@
     "@langchain/core": "^0.3.2",
     "@langchain/langgraph": "^0.2.4",
     "@langchain/openai": "^0.3.0",
+    "async-lock": "^1.4.1",
     "aws-cdk-lib": "2.160.0",
     "constructs": "^10.3.0",
     "discord.js": "^14.16.3",
@@ -27,6 +28,7 @@
     "@langchain/core": "0.3.2"
   },
   "devDependencies": {
+    "@types/async-lock": "^1",
     "@types/node": "^22.5.5",
     "@types/node-cron": "^3",
     "aws-cdk": "2.160.0",

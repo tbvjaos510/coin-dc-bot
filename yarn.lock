@@ -733,6 +733,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/async-lock@npm:^1":
+  version: 1.4.2
+  resolution: "@types/async-lock@npm:1.4.2"
+  checksum: 10c0/c40b68b746a6f0272539546c6765c08a1cb6f9df9141e6180eacde9310859db3f55d24fc90dd6cba7a6187d88b922c7d59b4734fe14cf31850d5dcf957069007
+  languageName: node
+  linkType: hard
+
 "@types/estree@npm:1.0.6, @types/estree@npm:^1.0.0":
   version: 1.0.6
   resolution: "@types/estree@npm:1.0.6"
@@ -1010,6 +1017,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"async-lock@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "async-lock@npm:1.4.1"
+  checksum: 10c0/f696991c7d894af1dc91abc81cc4f14b3785190a35afb1646d8ab91138238d55cabd83bfdd56c42663a008d72b3dc39493ff83797e550effc577d1ccbde254af
+  languageName: node
+  linkType: hard
+
 "asynckit@npm:^0.4.0":
   version: 0.4.0
   resolution: "asynckit@npm:0.4.0"
@@ -1204,8 +1218,10 @@ __metadata:
     "@langchain/core": "npm:^0.3.2"
     "@langchain/langgraph": "npm:^0.2.4"
     "@langchain/openai": "npm:^0.3.0"
+    "@types/async-lock": "npm:^1"
     "@types/node": "npm:^22.5.5"
     "@types/node-cron": "npm:^3"
+    async-lock: "npm:^1.4.1"
     aws-cdk: "npm:2.160.0"
     aws-cdk-lib: "npm:2.160.0"
     constructs: "npm:^10.3.0"

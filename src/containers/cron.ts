@@ -3,6 +3,7 @@ import { tradingController, userController } from "../controllers";
 import { ChannelType, Client, PublicThreadChannel } from "discord.js";
 import { prettyMyAccount } from "../tools/upbit-account";
 import { Logger } from "../utils/logger";
+import AsyncLock from "async-lock";
 
 class TradingCron {
   private crons: Record<string, {
@@ -11,6 +12,7 @@ class TradingCron {
   }> = {};
 
   private client!: Client;
+  private lock = new AsyncLock();
 
   async init(client: Client) {
     this.client = client;
@@ -79,6 +81,10 @@ class TradingCron {
       const { tradeIds } = this.crons[cronTime];
       Logger.info("task start", cronTime, tradeIds);
       const channelIds: Record<string, PublicThreadChannel> = {};
+      const today = new Date().toLocaleString("ko-KR", {
+        timeZone: "Asia/Seoul",
+        dateStyle: "full",
+      });
 
       for (const tradeId of tradeIds) {
         const tradeInfo = await tradingController.getTradeById(tradeId);
@@ -101,20 +107,27 @@ class TradingCron {
           continue;
         }
 
-        if (!channelIds[user.channelId]) {
-          const channel = await this.client.channels.fetch(user.channelId);
+        await this.lock.acquire(user.channelId, async () => {
+          if (!channelIds[user.channelId]) {
+            const channel = await this.client.channels.fetch(user.channelId);
 
-          if (channel?.type === ChannelType.GuildText) {
-            const thread = await channel.threads.create({
-              name: `트레이딩 ${getCurrentHourHumanReadable()}`,
-              type: ChannelType.PublicThread,
-              autoArchiveDuration: 1440,
-            });
+            if (channel?.type === ChannelType.GuildText) {
+              const existingThread = (await channel.threads.fetchActive()).threads.find(thread => thread.name.includes(today));
 
-            channelIds[user.channelId] = thread as PublicThreadChannel;
+              if (existingThread) {
+                channelIds[user.channelId] = existingThread as PublicThreadChannel;
+              } else {
+                const thread = await channel.threads.create({
+                  name: `트레이딩 ${today}`,
+                  type: ChannelType.PublicThread,
+                  autoArchiveDuration: 1440,
+                });
+
+                channelIds[user.channelId] = thread as PublicThreadChannel;
+              }
+            }
           }
-        }
-
+        });
         const thread = channelIds[user.channelId]!;
 
         const message = await thread.send(`${user.nickname}님의 트레이딩이 실행되었습니다.`);
@@ -140,11 +153,5 @@ class TradingCron {
     return task;
   }
 }
-
-const getCurrentHourHumanReadable = () => {
-  const now = new Date();
-
-  return `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}시`;
-};
 
 export const tradingCron = new TradingCron();

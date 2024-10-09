@@ -56,7 +56,7 @@ ${mapAccounts.map(account => `${account.market}:
   보유량: ${account.balance}개
   구매 가격: ${account.buy_price}원
   현재 가격: ${account.current_price}원
-  수익률: ${account.change_rate}`).join("\n---------\n")}`
+  수익률: ${account.change_rate}`).join("\n---------\n")}`,
   };
 };
 
@@ -113,6 +113,28 @@ ${mapMarkets.map(market => `${market.market}: ${market.korean_name} / `).join("\
     description: "현재 마켓 가격(분봉) 조회",
     schema: z.object({
       marketCoin: z.string({ description: "마켓 코인 (KRW- 로 시작)" }),
+      count: z.number({ description: "조회할 개수" }),
+    }),
+  });
+
+  const getTopTotalPriceCoins = tool(async ({ count }) => {
+    const tickers = await ubitQuoationService.getTickerAll(["KRW"]);
+
+    const topCoins = tickers
+      .filter(ticker => ticker.market.startsWith("KRW-"))
+      .map(ticker => ({
+        market: ticker.market,
+        total_price: ticker.acc_trade_price_24h,
+      }))
+      .sort((a, b) => b.total_price - a.total_price)
+      .slice(0, count);
+
+    return `거래대금 상위 ${count}개 코인 (백만단위):
+${topCoins.map((coin, index) => `${index + 1}. ${coin.market}: ${Math.floor(coin.total_price / 1000000)}`).join("\n")}`;
+  }, {
+    name: "get_top_total_price_coins",
+    description: "총 거래대금 상위 코인 조회",
+    schema: z.object({
       count: z.number({ description: "조회할 개수" }),
     }),
   });
@@ -230,12 +252,13 @@ ${results.map(result => `마켓: ${result.market}
       moreOrLess: z.enum(["more", "less"]),
       volumePercent: z.number({ description: "매도 비율 % (1~100)" }).min(1).max(100),
     }),
-  })
+  });
 
   return [
     getMarkets,
     getMyAccount,
     sellCoinsWithCondition,
+    getTopTotalPriceCoins,
     // getMinutesCandles,
     buyCoin,
     sellCoin,
