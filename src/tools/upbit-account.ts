@@ -228,7 +228,7 @@ ${topCoins.map((coin, index) => `${index + 1}. ${coin.market}: ${Math.floor(coin
       }).filter(Boolean) as { market: string, volume: number }[];
 
     if (sellCoins.length === 0) {
-      return "매도할 코인이 없습니다.";
+      return "해당 조건에 부합하는 매도할 코인이 없습니다.";
     }
 
     const results = await Promise.all(sellCoins.map(sellCoin => ubitExchangeService.sellOrder({
@@ -239,7 +239,7 @@ ${topCoins.map((coin, index) => `${index + 1}. ${coin.market}: ${Math.floor(coin
     const lastAccounts = await ubitExchangeService.getAllAccount();
     const krAccount = lastAccounts.find(account => account.currency === "KRW");
 
-    return `조건 매도 주문 결과:
+    return `조건 매도 주문 결과 (${results.length}개 코인 매도):
 ${results.map(result => `마켓: ${result.market}
 채결금: ${Math.round(Number(result.executed_funds))}원`).join("\n")}
 보유 원화: ${Math.floor(Number(krAccount?.balance))}원
