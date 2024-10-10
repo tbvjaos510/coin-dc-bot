@@ -28,17 +28,13 @@ jobs:
     - name: Install Modules
       run: yarn install --frozen-lockfile
 
-    - name: Deploy CDK
-      run: |
-        yarn cdk deploy --require-approval never
+    - name: cdk deploy
+      uses: youyo/aws-cdk-github-actions@v2
+      with:
+        cdk_subcommand: 'deploy'
+        cdk_args: '--require-approval never'
+        actions_comment: false
       env:
-        CDK_DEFAULT_ACCOUNT: ${{ secrets.CDK_DEFAULT_ACCOUNT }}
-        CDK_DEFAULT_REGION: ${{ secrets.CDK_DEFAULT_REGION }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-        DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
-        MONGO_URI: ${{ secrets.MONGO_URI }}
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        SERVER_IP: ${{ secrets.SERVER_IP }}
-        MONGO_DB_NAME: ${{ vars.MONGO_DB_NAME }}
+        AWS_DEFAULT_REGION: 'ap-northeast-2'
