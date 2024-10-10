@@ -43,6 +43,8 @@ export class ExtendedExchangeService extends ExchangeService {
   }
 
   async waitOrderByUuid(uuid: string): Promise<OrderResult> {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     const result = await this.getAuthParamData<OrderResult[]>({
       method: "GET",
       url: "https://api.upbit.com/v1/orders/uuids",
