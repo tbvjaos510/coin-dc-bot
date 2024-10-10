@@ -1,0 +1,37 @@
+name: Deploy CDK
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install AWS CLI
+      run: |
+        sudo apt-get install -y python3-pip
+        pip3 install awscli --upgrade --user
+
+    - name: Install CDK
+      run: npm install -g aws-cdk
+
+    - name: Deploy CDK
+      run: |
+        cdk deploy --require-approval never
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+        DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+        MONGO_URI: ${{ secrets.MONGO_URI }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        SERVER_IP: ${{ secrets.SERVER_IP }}
+        MONGO_DB_NAME: ${{ variables.MONGO_DB_NAME }}

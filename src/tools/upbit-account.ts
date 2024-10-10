@@ -52,11 +52,7 @@ export const prettyMyAccount = async (accounts: IAccountProps[]) => {
 현재 원화 계좌 잔고: ${Math.floor(Number(krwAccount?.balance)).toLocaleString()}원
 
 보유 가상화폐:
-${mapAccounts.map(account => `${account.market}:
-  보유량: ${account.balance}개
-  구매 가격: ${account.buy_price}원
-  현재 가격: ${account.current_price}원
-  수익률: ${account.change_rate}`).join("\n---------\n")}`,
+${mapAccounts.map(account => `*${account.market}*: 현재 ${account.current_price}원, 수익률 ${account.change_rate}`).join("\n")}`,
   };
 };
 
