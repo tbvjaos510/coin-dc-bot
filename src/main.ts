@@ -70,7 +70,7 @@ discordClient.on("messageCreate", async (message) => {
     }
 
     const reply = await message.reply({
-      content: `트레이딩 진행중... 약 1분정도 소요됩니다 :hourglass_flowing_sand:${isTest && "\n테스트 매매는 매매 기록이 저장되지 않습니다."}`,
+      content: `트레이딩 진행중... 약 1분정도 소요됩니다 :hourglass_flowing_sand:${isTest ? "\n테스트 매매는 매매 기록이 저장되지 않습니다." : ''}`,
     });
 
     try {
