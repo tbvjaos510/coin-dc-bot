@@ -20,6 +20,11 @@ jobs:
         sudo apt-get install -y python3-pip
         pip3 install awscli --upgrade --user
 
+    - name: Enable corepack
+      run: |
+          npm install -g corepack
+          corepack enable
+
     - name: Install Modules
       run: yarn install --frozen-lockfile
 
