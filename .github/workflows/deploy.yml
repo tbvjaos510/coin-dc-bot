@@ -36,12 +36,14 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
+    - name: Generate .env file
+      run: |
+        echo "DISCORD_BOT_TOKEN=${{ secrets.DISCORD_BOT_TOKEN }}" >> .env
+        echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
+        echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+        echo "SERVER_IP=${{ secrets.SERVER_IP }}" >> .env
+        echo "MONGO_DB_NAME=${{ vars.MONGO_DB_NAME }}" >> .env
+
     - name: Deploy CDK
       run: |
         yarn cdk deploy --require-approval never
-      env:
-        DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
-        MONGO_URI: ${{ secrets.MONGO_URI }}
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        SERVER_IP: ${{ secrets.SERVER_IP }}
-        MONGO_DB_NAME: ${{ vars.MONGO_DB_NAME }}

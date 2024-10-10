@@ -20,6 +20,8 @@ COPY --from=base /app/dist /app
 COPY --from=base /app/node_modules /app/node_modules
 COPY --from=base /app/package.json /app
 
+COPY .env /app
+
 WORKDIR /app
 
 
