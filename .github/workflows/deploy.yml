@@ -34,4 +34,4 @@ jobs:
         MONGO_URI: ${{ secrets.MONGO_URI }}
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         SERVER_IP: ${{ secrets.SERVER_IP }}
-        MONGO_DB_NAME: ${{ variables.MONGO_DB_NAME }}
+        MONGO_DB_NAME: ${{ vars.MONGO_DB_NAME }}
