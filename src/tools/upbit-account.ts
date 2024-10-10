@@ -137,6 +137,10 @@ ${topCoins.map((coin, index) => `${index + 1}. ${coin.market}: ${Math.floor(coin
 
 
   const buyCoin = tool(async ({ marketCoin, price }) => {
+    if (price % 1000 !== 0) {
+      return "매수 주문 실패: 가격은 1000원 단위로 입력해주세요.";
+    }
+
     const result = await ubitExchangeService.buyOrder({
       coin: marketCoin,
       price,
@@ -151,7 +155,7 @@ ${topCoins.map((coin, index) => `${index + 1}. ${coin.market}: ${Math.floor(coin
     description: "매수 주문 (시장가)",
     schema: z.object({
       marketCoin: z.string({ description: "마켓 코인 (KRW- 로 시작)" }),
-      price: z.number({ description: "매수 가격 (200,000원 이상)" }),
+      price: z.number({ description: "매수 가격 (5000원 이상, 1000원 단위)" }).min(5000),
     }),
   });
 
