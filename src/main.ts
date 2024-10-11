@@ -83,6 +83,7 @@ discordClient.on("messageCreate", async (message) => {
         content: lastMessageContent + (await prettyMyAccount(account)).message,
       });
     } catch (error: any) {
+      console.error(error);
       await reply.edit({
         content: error.message ?? "알 수 없는 오류가 발생했습니다.",
       });
@@ -147,6 +148,7 @@ discordClient.on("interactionCreate", async (interaction) => {
           ephemeral: true,
         });
       } catch (error: any) {
+        console.error(error);
         await interaction.reply({
           content: error.message ?? "알 수 없는 오류가 발생했습니다.",
           ephemeral: true,
@@ -186,6 +188,7 @@ discordClient.on("interactionCreate", async (interaction) => {
           ephemeral: true,
         });
       } catch (error: any) {
+        console.error(error);
         await interaction.reply({
           content: error.message ?? "알 수 없는 오류가 발생했습니다.",
           ephemeral: true,
@@ -228,6 +231,7 @@ discordClient.on("interactionCreate", async (interaction) => {
         });
 
       } catch (error: any) {
+        console.error(error);
         await interaction.reply({
           content: error.message ?? "알 수 없는 오류가 발생했습니다.",
           ephemeral: true,
