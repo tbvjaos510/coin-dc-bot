@@ -119,132 +119,137 @@ discordClient.on("messageCreate", async (message) => {
 });
 
 discordClient.on("interactionCreate", async (interaction) => {
-  if (interaction.isButton()) {
-    if (interaction.customId === "open_user_setting_modal") {
-      const user = await userController.getUser(interaction.user.id);
+  try {
 
-      interaction.showModal(createUserSettingModel(Boolean(user), user?.upbitApiKey, user?.upbitSecretKey, user?.initialBalance));
-    }
-    if (interaction.customId === "open_prompt_setting_modal") {
-      const user = await userController.getUser(interaction.user.id);
+    if (interaction.isButton()) {
+      if (interaction.customId === "open_user_setting_modal") {
+        const user = await userController.getUser(interaction.user.id);
 
-      if (!user) {
-        await interaction.reply({
-          content: "유저 정보를 먼저 등록해주세요.",
-          ephemeral: true,
-        });
-
-        return;
+        interaction.showModal(createUserSettingModel(Boolean(user), user?.upbitApiKey, user?.upbitSecretKey, user?.initialBalance));
       }
-
-      const prompt = await tradingController.getTradeByUserId(interaction.user.id);
-
-
-      interaction.showModal(createPromptSettingModel(prompt ? {
-        ...prompt,
-        cronTime: prompt.cronTime ? /0 0 ([\d,]+) \* \* \*/.exec(prompt.cronTime)?.[1] : "0,6,12,18",
-      } : undefined));
-    }
-    if (interaction.customId === "remove_user_setting") {
-      try {
-        await userController.deleteUser(interaction.user.id);
-        await tradingController.removeTradeInfo(interaction.user.id);
-
-        await interaction.reply({
-          content: "유저 정보 삭제가 완료되었습니다.",
-          ephemeral: true,
-        });
-      } catch (error: any) {
-        console.error(error);
-        await interaction.reply({
-          content: error.message ?? "알 수 없는 오류가 발생했습니다.",
-          ephemeral: true,
-        });
-      }
-    }
-  }
-
-  if (interaction.isModalSubmit()) {
-    if (interaction.customId === "user_setting_modal") {
-      const agree = interaction.fields.getTextInputValue("agree");
-
-      if (agree !== "동의함") {
-        await interaction.reply({
-          content: "동의를 하셔야 합니다.",
-          ephemeral: true,
-        });
-
-        return;
-      }
-
-      try {
-        await userController.upsertUser({
-          userId: interaction.user.id,
-          serverId: interaction.guildId!,
-          channelId: interaction.channelId!,
-          upbitApiKey: interaction.fields.getTextInputValue("upbit_access_key") || undefined,
-          upbitSecretKey: interaction.fields.getTextInputValue("upbit_secret_key") || undefined,
-          initialBalance: Number(interaction.fields.getTextInputValue("initial_balance")),
-          nickname: interaction.user.username,
-        });
-
-        const hasUpbit = Boolean(interaction.fields.getTextInputValue("upbit_access_key"));
-
-        await interaction.reply({
-          content: "유저 정보 등록이 완료되었습니다.\n" + (hasUpbit ? "업비트 API 등록이 완료되었습니다." : "업비트 API 등록을 하지 않았습니다. 테스트 매매만 가능합니다."),
-          ephemeral: true,
-        });
-      } catch (error: any) {
-        console.error(error);
-        await interaction.reply({
-          content: error.message ?? "알 수 없는 오류가 발생했습니다.",
-          ephemeral: true,
-        });
-      }
-    }
-
-    if (interaction.customId === "prompt_setting_modal") {
-      try {
+      if (interaction.customId === "open_prompt_setting_modal") {
         const user = await userController.getUser(interaction.user.id);
 
         if (!user) {
           await interaction.reply({
-            content: "유저 정보를 먼저 등록해주세요. (채팅에 '트레이딩시작할래!'를 입력해주세요.)",
+            content: "유저 정보를 먼저 등록해주세요.",
             ephemeral: true,
           });
 
           return;
         }
 
-        let cronTime = user.upbitApiKey ? interaction.fields.getTextInputValue("cron") : "";
+        const prompt = await tradingController.getTradeByUserId(interaction.user.id);
 
-        if (cronTime) {
-          cronTime = cronTime.split(",").map((time) => Number(time.trim())).join(",");
-          cronTime = `0 0 ${cronTime} * * *`;
+
+        interaction.showModal(createPromptSettingModel(prompt ? {
+          ...prompt,
+          cronTime: prompt.cronTime ? /0 0 ([\d,]+) \* \* \*/.exec(prompt.cronTime)?.[1] : "0,6,12,18",
+        } : undefined));
+      }
+      if (interaction.customId === "remove_user_setting") {
+        try {
+          await userController.deleteUser(interaction.user.id);
+          await tradingController.removeTradeInfo(interaction.user.id);
+
+          await interaction.reply({
+            content: "유저 정보 삭제가 완료되었습니다.",
+            ephemeral: true,
+          });
+        } catch (error: any) {
+          console.error(error);
+          await interaction.reply({
+            content: error.message ?? "알 수 없는 오류가 발생했습니다.",
+            ephemeral: true,
+          });
         }
-
-        await tradingController.upsertTradeInfo(interaction.user.id, {
-          userMessage: interaction.fields.getTextInputValue("user_message"),
-          cronTime: cronTime || undefined,
-        });
-
-        await interaction.reply({
-          content: `<@${interaction.user.id}>님의 프롬프트 정보 등록이 완료되었습니다.
-프롬프트: \`\`\`${interaction.fields.getTextInputValue("user_message")}\`\`\`
-시간: ${cronTime || "없음"}
-
-프롬프트 정보 등록이 완료되었습니다. 정해진 시간에 매매가 진행됩니다. 혹은 '진짜트레이딩할래!'나 '테스트트레이딩할래!'를 입력해주세요.
-`,
-        });
-
-      } catch (error: any) {
-        console.error(error);
-        await interaction.reply({
-          content: error.message ?? "알 수 없는 오류가 발생했습니다.",
-          ephemeral: true,
-        });
       }
     }
+
+    if (interaction.isModalSubmit()) {
+      if (interaction.customId === "user_setting_modal") {
+        const agree = interaction.fields.getTextInputValue("agree");
+
+        if (agree !== "동의함") {
+          await interaction.reply({
+            content: "동의를 하셔야 합니다.",
+            ephemeral: true,
+          });
+
+          return;
+        }
+
+        try {
+          await userController.upsertUser({
+            userId: interaction.user.id,
+            serverId: interaction.guildId!,
+            channelId: interaction.channelId!,
+            upbitApiKey: interaction.fields.getTextInputValue("upbit_access_key") || undefined,
+            upbitSecretKey: interaction.fields.getTextInputValue("upbit_secret_key") || undefined,
+            initialBalance: Number(interaction.fields.getTextInputValue("initial_balance")),
+            nickname: interaction.user.username,
+          });
+
+          const hasUpbit = Boolean(interaction.fields.getTextInputValue("upbit_access_key"));
+
+          await interaction.reply({
+            content: "유저 정보 등록이 완료되었습니다.\n" + (hasUpbit ? "업비트 API 등록이 완료되었습니다." : "업비트 API 등록을 하지 않았습니다. 테스트 매매만 가능합니다."),
+            ephemeral: true,
+          });
+        } catch (error: any) {
+          console.error(error);
+          await interaction.reply({
+            content: error.message ?? "알 수 없는 오류가 발생했습니다.",
+            ephemeral: true,
+          });
+        }
+      }
+
+      if (interaction.customId === "prompt_setting_modal") {
+        try {
+          const user = await userController.getUser(interaction.user.id);
+
+          if (!user) {
+            await interaction.reply({
+              content: "유저 정보를 먼저 등록해주세요. (채팅에 '트레이딩시작할래!'를 입력해주세요.)",
+              ephemeral: true,
+            });
+
+            return;
+          }
+
+          let cronTime = user.upbitApiKey ? interaction.fields.getTextInputValue("cron") : "";
+
+          if (cronTime) {
+            cronTime = cronTime.split(",").map((time) => Number(time.trim())).join(",");
+            cronTime = `0 0 ${cronTime} * * *`;
+          }
+
+          await tradingController.upsertTradeInfo(interaction.user.id, {
+            userMessage: interaction.fields.getTextInputValue("user_message"),
+            cronTime: cronTime || undefined,
+          });
+
+          await interaction.reply({
+            content: `<@${interaction.user.id}>님의 프롬프트 정보 등록이 완료되었습니다.
+  프롬프트: \`\`\`${interaction.fields.getTextInputValue("user_message")}\`\`\`
+  시간: ${cronTime || "없음"}
+  
+  프롬프트 정보 등록이 완료되었습니다. 정해진 시간에 매매가 진행됩니다. 혹은 '진짜트레이딩할래!'나 '테스트트레이딩할래!'를 입력해주세요.
+  `,
+          });
+
+        } catch (error: any) {
+          console.error(error);
+          await interaction.reply({
+            content: error.message ?? "알 수 없는 오류가 발생했습니다.",
+            ephemeral: true,
+          });
+        }
+      }
+    }
+  } catch (error: any) {
+    console.error(error);
   }
 });
 
