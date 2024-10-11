@@ -77,10 +77,17 @@ discordClient.on("messageCreate", async (message) => {
       const {
         lastMessageContent,
         account,
+        history,
       } = await tradingController.executeTrading(prompt._id, message.content === "테스트트레이딩할래!");
 
       await reply.edit({
         content: lastMessageContent + (await prettyMyAccount(account)).message,
+        files: [
+          {
+            name: "trading-history.txt",
+            attachment: Buffer.from(JSON.stringify(history, null, 2)),
+          }
+        ]
       });
     } catch (error: any) {
       console.error(error);
