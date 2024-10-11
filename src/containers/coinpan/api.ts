@@ -1,4 +1,5 @@
 import parse from "node-html-parser";
+import { removeDuplicate } from "../../utils/array";
 
 interface Board {
   title: string;
@@ -10,7 +11,7 @@ export class CoinPanAPI {
   async getFreeBoardPopularList() {
     const boards = await Promise.all([1, 2].map(page => this.getFreeBoardList(page))).then(boards => boards.flat());
 
-    return boards.sort((a, b) => b.hit - a.hit).slice(0, 30);
+    return removeDuplicate(boards, 'title').sort((a, b) => b.hit - a.hit).slice(0, 20);
   }
 
   async getFreeBoardList(page: number) {

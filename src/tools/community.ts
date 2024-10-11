@@ -21,7 +21,7 @@ const getDcinsidePosts = tool(async () => {
   const posts = await dcApi.getPopularGalleryList();
   return posts.map(post => `디씨인사이드 게시글
 -----
-게시글 제목: ${post.subject} / 조회수: ${post.hit}`).join("\n");
+제목: ${post.subject} / 조회수: ${post.hit}`).join("\n");
 }, {
   name: "get_dcinside_community_posts",
   description: "디시인사이드 가상화폐 게시판 실시간 인기 게시글 조회",

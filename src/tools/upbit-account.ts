@@ -242,7 +242,8 @@ ${topCoins.map((coin, index) => `${index + 1}. ${coin.market}: ${Math.floor(coin
     return `조건 매도 주문 결과 (${results.length}개 코인 매도):
 ${results.map(result => `마켓: ${result.market}
 채결금: ${Math.round(Number(result.executed_funds))}원`).join("\n")}
-보유 원화: ${Math.floor(Number(krAccount?.balance))}원
+
+현재 원화 계좌 잔고: ${Math.floor(Number(krAccount?.balance))}원
   `;
   }, {
     name: "sell_coins_with_condition",

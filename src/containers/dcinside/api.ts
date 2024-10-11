@@ -1,5 +1,6 @@
 import AppIdGenerator from "./auth";
 import { Gallery, SearchResult } from "./types";
+import { removeDuplicate } from "../../utils/array";
 
 export class DcInsideApi {
   private appIdGenerator: AppIdGenerator = new AppIdGenerator();
@@ -7,7 +8,7 @@ export class DcInsideApi {
   public async getPopularGalleryList(): Promise<Gallery[]> {
     const posts = await Promise.all([this.getGalleryList("bitcoins_new1", 1), this.getGalleryList("bitcoins_new1", 2), this.getGalleryList("chartanalysis", 1), this.getGalleryList("chartanalysis", 2)]).then(boards => boards.flat());
 
-    const filteredPosts = posts.sort((a, b) => parseInt(b.hit) - parseInt(a.hit)).slice(0, 40);
+    const filteredPosts = removeDuplicate(posts, 'subject').sort((a, b) => parseInt(b.hit) - parseInt(a.hit)).slice(0, 30);
 
     return filteredPosts;
   }
