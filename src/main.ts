@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Client } from "discord.js";
-import { createInlineButton } from "./discord/create-inline-button";
 import { initMongoDB } from "./models";
 import { createUserSettingModel } from "./discord/create-user-setting-model";
 import { createPromptSettingModel } from "./discord/create-prompt-setting-model";
@@ -37,17 +36,17 @@ discordClient.on("messageCreate", async (message) => {
         .setCustomId("remove_user_setting")
         .setLabel("유저 & 프롬프트 정보 삭제")
         .setStyle(ButtonStyle.Danger),
-    )
+    );
 
     await message.reply({
       content: "매매를 위해 필요한 정보를 등록해주세요.\n유저 정보 등록을 먼저 한 후, 프롬프트 정보 등록을 해주세요.",
       components: [
-        buttonGroup
+        buttonGroup,
       ],
     });
   }
 
-  if (message.content === "진짜트레이딩할래!" || message.content === "테스트트레이딩할래!") {
+  if (message.content === "진짜트레이딩할래!" || message.content === "테스트트레이딩할래!" || (process.env.NODE_ENV !== "production" && message.content === "로컬트레이딩할래!")) {
     const isTest = message.content === "테스트트레이딩할래!";
     const user = await userController.getUser(message.author.id);
 
@@ -70,7 +69,7 @@ discordClient.on("messageCreate", async (message) => {
     }
 
     const reply = await message.reply({
-      content: `트레이딩 진행중... 약 1분정도 소요됩니다 :hourglass_flowing_sand:${isTest ? "\n테스트 매매는 매매 기록이 저장되지 않습니다." : ''}`,
+      content: `트레이딩 진행중... 약 1분정도 소요됩니다 :hourglass_flowing_sand:${isTest ? "\n테스트 매매는 매매 기록이 저장되지 않습니다." : ""}`,
     });
 
     try {
@@ -86,8 +85,8 @@ discordClient.on("messageCreate", async (message) => {
           {
             name: "trading-history.txt",
             attachment: Buffer.from(JSON.stringify(history, null, 2)),
-          }
-        ]
+          },
+        ],
       });
     } catch (error: any) {
       console.error(error);
@@ -97,7 +96,7 @@ discordClient.on("messageCreate", async (message) => {
     }
   }
 
-  if (message.content.startsWith('<@') && message.content.endsWith('투자정보!')) {
+  if (message.content.startsWith("<@") && message.content.endsWith("투자정보!")) {
     const targetUserId = message.mentions.users.first()?.id || message.author.id;
 
     const account = await tradingController.getTradeAccount(targetUserId);

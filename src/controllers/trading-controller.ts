@@ -62,39 +62,23 @@ export class TradingController {
       streamMode: "values",
     });
 
-    const history: {
-      type: "message" | "tool_call",
-      content?: string,
-      tool?: any
-    }[] = [];
+    let lastMessages: any[] = [];
 
     for await (const { messages } of stream) {
-      const lastMessage = messages[messages.length - 1];
-
-      if (lastMessage.content) {
-        history.push({
-          type: "message",
-          content: lastMessage.content,
-        });
-      } else if (lastMessage.tool_calls?.length > 0) {
-        const tools = lastMessage.tool_calls;
-
-        for (const tool of tools) {
-          history.push({
-            type: "tool_call",
-            tool,
-          });
-        }
-      }
+      lastMessages = messages;
     }
 
-    tradeInfo.lastMessages = history;
-
-    await tradeInfo.save();
+    await AiTrading.updateOne({
+      _id: tradeId,
+    }, {
+      $set: {
+        lastMessages,
+      },
+    });
 
     return {
-      history,
-      lastMessageContent: history[history.length - 1].content!,
+      history: lastMessages,
+      lastMessageContent: lastMessages[lastMessages.length - 1].content!,
       account: await exchangeService.getAllAccount(),
     };
   }
