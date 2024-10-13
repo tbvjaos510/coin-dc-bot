@@ -60,21 +60,24 @@ export class TradingController {
 
     const stream = await agent.stream(inputs, {
       streamMode: "values",
+      recursionLimit: 35,
     });
 
     let lastMessages: any[] = [];
 
-    for await (const { messages } of stream) {
-      lastMessages = messages;
+    try {
+      for await (const { messages } of stream) {
+        lastMessages = messages;
+      }
+    } finally {
+      await AiTrading.updateOne({
+        _id: tradeId,
+      }, {
+        $set: {
+          lastMessages,
+        },
+      });
     }
-
-    await AiTrading.updateOne({
-      _id: tradeId,
-    }, {
-      $set: {
-        lastMessages,
-      },
-    });
 
     return {
       history: lastMessages,
