@@ -43,5 +43,6 @@ ${searchResult.board.map(post => `제목: ${post.title} / 내용: ${post.content
 export const communityTools = [
   getCoinpanPosts,
   getDcinsidePosts,
-  searchDcinsidePosts,
+  // NOTE: 게시글 검색은 쓸데없는 글이 너무 많이 나와서 일단 비활성화
+  // searchDcinsidePosts,
 ];
