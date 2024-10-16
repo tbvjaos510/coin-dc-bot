@@ -40,7 +40,7 @@ export const prettyMyAccount = async (accounts: IAccountProps[]) => {
         current_price: Math.floor(ticker.trade_price * parseFloat(account.balance)),
         change_rate: `${((ticker.trade_price - parseFloat(account.avg_buy_price)) / parseFloat(account.avg_buy_price) * 100).toFixed(2)}%`,
       };
-    });
+    }).filter(account => account.current_price > 0);
 
   const totalBalance = Math.floor(mapAccounts.reduce((acc, account) => acc + account.current_price, 0) + Number(krwAccount?.balance));
 
