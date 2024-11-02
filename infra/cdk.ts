@@ -61,6 +61,8 @@ class CoinDcBotStack extends cdk.Stack {
       circuitBreaker: {
         rollback: true
       },
+      minHealthyPercent: 0,
+      maxHealthyPercent: 100
     });
   }
 }
