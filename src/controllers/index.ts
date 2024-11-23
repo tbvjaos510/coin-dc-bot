@@ -1,5 +1,6 @@
-import { UserController } from "./user-controller";
-import { TradingController } from "./trading-controller";
+import { InteractionController } from "./interaction-controller";
+import { MessageController } from "./message-controller";
+import { tradingCronService, tradingService, userService } from "../services";
 
-export const userController = new UserController();
-export const tradingController = new TradingController();
+export const interactionController = new InteractionController(userService, tradingService, tradingCronService);
+export const messageController = new MessageController(userService, tradingService);

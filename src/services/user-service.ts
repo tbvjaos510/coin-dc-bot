@@ -2,7 +2,7 @@ import { IUser, User } from "../models/users";
 import { ExtendedExchangeService } from "../containers/upbit-extended/exchange-service";
 import { prettyMyAccount } from "../tools/upbit-account";
 
-export class UserController {
+export class UserService {
   async getUser(id: string): Promise<IUser | null> {
     const user = await User.findOne({
       userId: id,

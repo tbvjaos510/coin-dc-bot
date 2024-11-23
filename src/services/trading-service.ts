@@ -1,5 +1,5 @@
 import { AiTrading, IAITrading } from "../models/ai-tradings";
-import { IUser, User } from "../models/users";
+import { User } from "../models/users";
 import { ChatOpenAI } from "@langchain/openai";
 import { communityTools } from "../tools/community";
 import { StructuredTool } from "@langchain/core/tools";
@@ -7,16 +7,14 @@ import { ExtendedExchangeService } from "../containers/upbit-extended/exchange-s
 import { getUpbitTools } from "../tools/upbit-account";
 import { MockExchangeService } from "../containers/upbit-extended/mock-exchange-service";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { tradingCron } from "../containers/cron";
 import { SYSTEM_PROMPT } from "../constants/prompt";
 
-
-export class TradingController {
-  private model = new ChatOpenAI({
-    model: "gpt-4o-mini",
-  });
-
+export class TradingService {
   async executeTrading(tradeId: string, isTest: boolean) {
+    const model = new ChatOpenAI({
+      model: "gpt-4o-mini",
+    });
+
     const tradeInfo = await AiTrading.findById(tradeId);
 
     if (!tradeInfo) {
@@ -45,7 +43,7 @@ export class TradingController {
     tools.push(...getUpbitTools(exchangeService));
 
     const agent = createReactAgent({
-      llm: this.model,
+      llm: model,
       tools,
       messageModifier: SYSTEM_PROMPT,
     });
@@ -86,41 +84,17 @@ export class TradingController {
     };
   }
 
-  async upsertTradeInfo(userId: string, trade: Partial<IAITrading>) {
-    const exitingTrade = await AiTrading.findOne({
-      userId,
-    });
-
-    if (exitingTrade && exitingTrade.cronTime) {
-      tradingCron.removeTradeCron(exitingTrade._id, exitingTrade.cronTime);
-    }
-
-    const result = await AiTrading.updateOne({
+  async upsertTradeInfo(userId: string, tradeInfo: Partial<IAITrading>) {
+    await AiTrading.updateOne({
       userId,
     }, {
-      $set: trade,
+      $set: tradeInfo,
     }, {
       upsert: true,
     });
-
-    if (exitingTrade?.cronTime) {
-      tradingCron.removeTradeCron((result.upsertedId?.toString() || exitingTrade._id?.toString())!, exitingTrade.cronTime);
-    }
-
-    if ((result.upsertedId || exitingTrade) && trade.cronTime) {
-      tradingCron.addTradeCron((result.upsertedId?.toString() || exitingTrade?._id?.toString())!, trade.cronTime);
-    }
   }
 
-  async removeTradeInfo(userId: string) {
-    const tradeInfo = await AiTrading.findOne({
-      userId,
-    });
-
-    if (tradeInfo && tradeInfo.cronTime) {
-      tradingCron.removeTradeCron(tradeInfo._id, tradeInfo.cronTime);
-    }
-
+  async removeTradeInfoByUserId(userId: string) {
     await AiTrading.deleteOne({
       userId,
     });
@@ -174,15 +148,3 @@ export class TradingController {
     return tradeInfo.map((trade) => trade.toObject());
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

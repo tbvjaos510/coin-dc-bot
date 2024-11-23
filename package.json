@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "tsx src/main.ts",
     "build": "tsc",
-    "deploy": "cdk deploy"
+    "deploy": "cdk deploy",
+    "test": "vitest --typecheck -c vitest.config.mts"
   },
   "type": "commonjs",
   "dependencies": {
@@ -31,9 +32,11 @@
     "@types/async-lock": "^1",
     "@types/node": "^22.5.5",
     "@types/node-cron": "^3",
+    "@vitest/coverage-v8": "^2.1.5",
     "aws-cdk": "2.160.0",
+    "mongodb-memory-server": "^10.1.2",
     "tsx": "^4.19.1",
     "typescript": "^5.6.2",
-    "vitest": "^2.1.2"
+    "vitest": "^2.1.5"
   }
 }

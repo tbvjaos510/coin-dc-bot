@@ -11,4 +11,8 @@ export class Logger {
   public static error(message: string, ...args: any[]) {
     this.log("error", message, ...args);
   }
+
+  public static warn(message: string, ...args: any[]) {
+    this.log("warn", message, ...args);
+  }
 }

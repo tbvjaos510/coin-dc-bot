@@ -15,6 +15,6 @@ describe("CoinPan API", () => {
     const posts = await api.getFreeBoardPopularList();
 
     expect(posts).toBeInstanceOf(Array);
-    expect(posts.length).toBe(30)
+    expect(posts.length).toBe(20)
   });
 });
