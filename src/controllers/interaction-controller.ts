@@ -34,8 +34,7 @@ export class InteractionController {
     try {
       const user = await this.userService.getUser(interaction.user.id);
       if (!user) {
-        await interaction.reply({ content: "유저 정보가 없습니다.", ephemeral: true });
-        return;
+        throw new Error("유저 정보가 없습니다.");
       }
 
       await this.userService.deleteUser(interaction.user.id);
@@ -75,11 +74,7 @@ export class InteractionController {
     try {
       const user = await this.userService.getUser(interaction.user.id);
       if (!user) {
-        await interaction.reply({
-          content: "유저 정보를 먼저 등록해주세요. (채팅에 '트레이딩시작할래!'를 입력해주세요.)",
-          ephemeral: true,
-        });
-        return;
+        throw new Error("유저 정보를 먼저 등록해주세요. (채팅에 '트레이딩시작할래!'를 입력해주세요.)");
       }
       let cronTime = user.upbitApiKey ? interaction.fields.getTextInputValue("cron") : "";
 
@@ -89,8 +84,7 @@ export class InteractionController {
       }
 
       if (cronTime && !this.tradingCronService.validateCronTime(cronTime)) {
-        await interaction.reply({ content: "올바른 시간이 아닙니다. 다시 입력해주세요.", ephemeral: true });
-        return;
+        throw new Error("올바른 시간이 아닙니다. 다시 입력해주세요.");
       }
 
       await this.tradingCronService.removeTradeCronByUserId(interaction.user.id);
@@ -111,7 +105,10 @@ export class InteractionController {
       });
     } catch (error: any) {
       Logger.error(error);
-      await interaction.reply({ content: error.message || "오류가 발생했습니다.", ephemeral: true });
+      await interaction.reply({
+        content: `${error.message || "오류가 발생했습니다."}\n입력 프롬프트: ${interaction.fields.getTextInputValue("user_message")}\n입력 시간: ${interaction.fields.getTextInputValue("cron") || "없음"}`,
+        ephemeral: true,
+      });
     }
   }
 }

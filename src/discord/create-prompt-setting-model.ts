@@ -7,6 +7,9 @@ import {
 } from "discord.js";
 import { IAITrading } from "../models/ai-tradings";
 
+const cronToHours = (cron: string) => {
+  return cron.split(" ")[2];
+};
 
 export const createPromptSettingModel = (defaultValue?: Partial<IAITrading>) => {
   return new ModalBuilder()
@@ -28,8 +31,8 @@ export const createPromptSettingModel = (defaultValue?: Partial<IAITrading>) => 
           .setLabel("자동 매매 시간 (콤마로 구분. 업비트 API 등록 시에만 필요)")
           .setStyle(TextInputStyle.Short)
           .setPlaceholder("0,6,12,18")
-          .setValue(defaultValue?.cronTime ?? "0,6,12,18")
+          .setValue(defaultValue?.cronTime ? cronToHours(defaultValue.cronTime) : "0")
           .setRequired(false),
-      )
+      ),
     );
 };

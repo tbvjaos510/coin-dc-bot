@@ -122,7 +122,7 @@ describe("InteractionController Unit Tests", () => {
       await new AiTrading({
         userId: "test_user_id",
         userMessage: "test_message",
-        cronTime: "0 0 * * *",
+        cronTime: "0 0 1,2,3 * * *",
       }).save();
 
       await interactionController.openPromptSettingModal(interaction);
@@ -137,7 +137,7 @@ describe("InteractionController Unit Tests", () => {
             }),
             expect.objectContaining({
               components: [
-                expect.objectContaining({ custom_id: "cron", value: "0 0 * * *" }),
+                expect.objectContaining({ custom_id: "cron", value: "1,2,3" }),
               ],
             }),
           ]),
@@ -405,7 +405,7 @@ describe("InteractionController Unit Tests", () => {
       await interactionController.submitPromptSettingModal(interaction);
 
       expect(interaction.reply).toHaveBeenCalledWith({
-        content: "올바른 시간이 아닙니다. 다시 입력해주세요.",
+        content: expect.stringContaining("올바른 시간이 아닙니다. 다시 입력해주세요."),
         ephemeral: true,
       });
     });
@@ -420,7 +420,7 @@ describe("InteractionController Unit Tests", () => {
       await interactionController.submitPromptSettingModal(interaction);
 
       expect(interaction.reply).toHaveBeenCalledWith({
-        content: "유저 정보를 먼저 등록해주세요. (채팅에 '트레이딩시작할래!'를 입력해주세요.)",
+        content: expect.stringContaining("유저 정보를 먼저 등록해주세요. (채팅에 '트레이딩시작할래!'를 입력해주세요.)"),
         ephemeral: true,
       });
     });
