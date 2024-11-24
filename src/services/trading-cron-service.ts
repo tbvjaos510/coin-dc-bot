@@ -52,6 +52,10 @@ export class TradingCronService {
     }
   }
 
+  validateCronTime(cronTime: string) {
+    return cron.validate(cronTime);
+  }
+
   addTradeCron(tradeId: string, cronTime: string) {
     this.crons[cronTime] = this.crons[cronTime] || {
       tradeIds: [],

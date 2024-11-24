@@ -88,6 +88,11 @@ export class InteractionController {
         cronTime = `0 0 ${cronTime} * * *`;
       }
 
+      if (cronTime && !this.tradingCronService.validateCronTime(cronTime)) {
+        await interaction.reply({ content: "올바른 시간이 아닙니다. 다시 입력해주세요.", ephemeral: true });
+        return;
+      }
+
       await this.tradingCronService.removeTradeCronByUserId(interaction.user.id);
 
       await this.tradingService.upsertTradeInfo(interaction.user.id, {

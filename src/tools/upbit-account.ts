@@ -125,8 +125,8 @@ ${mapMarkets.map(market => `${market.market}: ${market.korean_name} / `).join("\
       .sort((a, b) => b.total_price - a.total_price)
       .slice(0, count);
 
-    return `거래대금 상위 ${count}개 코인 (백만단위):
-${topCoins.map((coin, index) => `${index + 1}. ${coin.market}: ${Math.floor(coin.total_price / 1000000)}`).join("\n")}`;
+    return `거래대금 상위 ${count}개 코인:
+${topCoins.map((coin, index) => `${index + 1}등. ${coin.market}`).join("\n")}`;
   }, {
     name: "get_top_total_price_coins",
     description: "총 거래대금 상위 코인 조회",

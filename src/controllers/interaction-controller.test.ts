@@ -64,7 +64,7 @@ describe("InteractionController Unit Tests", () => {
             }),
           ]),
         }),
-      )
+      );
     });
   });
 
@@ -102,7 +102,7 @@ describe("InteractionController Unit Tests", () => {
           ]),
         }),
       );
-    })
+    });
 
     it("should open prompt setting modal with filled form", async () => {
       const interaction = {
@@ -383,6 +383,31 @@ describe("InteractionController Unit Tests", () => {
       });
       expect(tradingCronService.getTradingCronsByCronTime("0 0 4,5,6 * * *")).toBeUndefined();
       expect(tradingCronService.getTradingCronsByCronTime("0 0 1,2,3 * * *")).not.toBeUndefined();
+    });
+
+    it("should handle error when cron time is invalid", async () => {
+      await new User({
+        userId: "test_user_id",
+        serverId: "test_server_id",
+        channelId: "test_channel_id",
+        nickname: "test_nickname",
+        initialBalance: 1000,
+        upbitApiKey: "test_api_key",
+        upbitSecretKey: "test_secret_key",
+      }).save();
+
+      interaction.fields.getTextInputValue = vi.fn().mockImplementation((field) => {
+        if (field === "user_message") return "test_message";
+        if (field === "cron") return "invalid_cron";
+        return "";
+      });
+
+      await interactionController.submitPromptSettingModal(interaction);
+
+      expect(interaction.reply).toHaveBeenCalledWith({
+        content: "올바른 시간이 아닙니다. 다시 입력해주세요.",
+        ephemeral: true,
+      });
     });
 
     it("should handle error when user is not registered", async () => {
