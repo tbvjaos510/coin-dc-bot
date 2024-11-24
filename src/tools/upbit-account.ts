@@ -259,7 +259,7 @@ ${results.map(result => `마켓: ${result.market}
     getMarkets,
     getMyAccount,
     sellCoinsWithCondition,
-    getTopTotalPriceCoins,
+    // getTopTotalPriceCoins,
     // getMinutesCandles,
     buyCoin,
     sellCoin,

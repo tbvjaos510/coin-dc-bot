@@ -3,7 +3,7 @@
   "packageManager": "yarn@4.2.2",
   "scripts": {
     "dev": "tsx src/main.ts",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.app.json",
     "deploy": "cdk deploy",
     "test": "vitest --typecheck -c vitest.config.mts"
   },
