@@ -152,10 +152,10 @@ ${topCoins.map((coin, index) => `${index + 1}등. ${coin.market}`).join("\n")}`;
 `;
   }, {
     name: "buy_coin",
-    description: "매수 주문 (시장가)",
+    description: "매수 주문 (시장가, 소수점 구매)",
     schema: z.object({
       marketCoin: z.string({ description: "마켓 코인 (KRW- 로 시작)" }),
-      price: z.number({ description: "매수 가격 (5000원 이상, 1000원 단위)" }).min(5000),
+      price: z.number({ description: "구매할 총 금액 (최소 5000원)" }).min(5000),
     }),
   });
 
