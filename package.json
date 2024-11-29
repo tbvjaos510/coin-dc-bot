@@ -1,6 +1,6 @@
 {
   "name": "coin-dc-bot",
-  "packageManager": "yarn@4.2.2",
+  "packageManager": "yarn@4.5.3",
   "scripts": {
     "dev": "tsx src/main.ts",
     "build": "tsc -p tsconfig.app.json",

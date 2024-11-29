@@ -8,7 +8,7 @@ COPY package.json yarn.lock .yarnrc.yml /app/
 COPY .yarn /app/.yarn
 
 
-RUN yarn set version berry
+RUN corepack enable
 RUN yarn install
 
 COPY . /app
