@@ -137,10 +137,6 @@ ${topCoins.map((coin, index) => `${index + 1}등. ${coin.market}`).join("\n")}`;
 
 
   const buyCoin = tool(async ({ marketCoin, price }) => {
-    if (price % 1000 !== 0) {
-      return "매수 주문 실패: 가격은 1000원 단위로 입력해주세요.";
-    }
-
     const result = await ubitExchangeService.buyOrder({
       coin: marketCoin,
       price,
