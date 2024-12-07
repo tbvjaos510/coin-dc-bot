@@ -1,6 +1,7 @@
 import { AiTrading, IAITrading } from "../models/ai-tradings";
 import { User } from "../models/users";
 import { ChatOpenAI } from "@langchain/openai";
+import { ChatAnthropic } from '@langchain/anthropic';
 import { communityTools } from "../tools/community";
 import { StructuredTool } from "@langchain/core/tools";
 import { ExtendedExchangeService } from "../containers/upbit-extended/exchange-service";
@@ -14,6 +15,11 @@ export class TradingService {
     const model = new ChatOpenAI({
       model: "gpt-4o-mini",
     });
+    // const model = new ChatAnthropic({
+    //   model: 'claude-3-5-haiku-20241022',
+    //   apiKey: process.env.ANTHROPIC_API_KEY!,
+    //   temperature: 0.1
+    // })
 
     const tradeInfo = await AiTrading.findById(tradeId);
 
