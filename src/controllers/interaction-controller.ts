@@ -87,11 +87,18 @@ export class InteractionController {
         throw new Error("올바른 시간이 아닙니다. 다시 입력해주세요.");
       }
 
+      const model = interaction.fields.getTextInputValue("model");
+
+      if (model !== "gpt" && model !== "claude") {
+        throw new Error("사용할 모델은 gpt 또는 claude 중 하나여야 합니다.");
+      }
+
       await this.tradingCronService.removeTradeCronByUserId(interaction.user.id);
 
       await this.tradingService.upsertTradeInfo(interaction.user.id, {
         userMessage: interaction.fields.getTextInputValue("user_message"),
         cronTime: cronTime || undefined,
+        model
       });
 
       if (cronTime) {

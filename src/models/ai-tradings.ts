@@ -5,12 +5,14 @@ export interface IAITrading {
   userId: string;
   userMessage: string;
   cronTime?: string;
+  model?: 'gpt' | 'claude';
   lastMessages?: any[];
 }
 
 const aiTradingSchema = new Schema<IAITrading>({
   userId: { type: String, required: true, index: true },
   userMessage: { type: String, required: true },
+  model: { type: String, required: true },
   cronTime: { type: String },
   lastMessages: { type: Array },
 });

@@ -27,6 +27,15 @@ export const createPromptSettingModel = (defaultValue?: Partial<IAITrading>) => 
       ),
       new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
         new TextInputBuilder()
+          .setCustomId("model")
+          .setLabel("사용할 모델 (gpt or claude)")
+          .setStyle(TextInputStyle.Short)
+          .setPlaceholder("gpt")
+          .setValue(defaultValue?.model ?? "gpt")
+          .setRequired(true),
+      ),
+      new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+        new TextInputBuilder()
           .setCustomId("cron")
           .setLabel("자동 매매 시간 (콤마로 구분. 업비트 API 등록 시에만 필요)")
           .setStyle(TextInputStyle.Short)

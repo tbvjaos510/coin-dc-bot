@@ -1,7 +1,7 @@
 import { AiTrading, IAITrading } from "../models/ai-tradings";
 import { User } from "../models/users";
 import { ChatOpenAI } from "@langchain/openai";
-import { ChatAnthropic } from '@langchain/anthropic';
+import { ChatAnthropic } from "@langchain/anthropic";
 import { communityTools } from "../tools/community";
 import { StructuredTool } from "@langchain/core/tools";
 import { ExtendedExchangeService } from "../containers/upbit-extended/exchange-service";
@@ -9,17 +9,10 @@ import { getUpbitTools } from "../tools/upbit-account";
 import { MockExchangeService } from "../containers/upbit-extended/mock-exchange-service";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { SYSTEM_PROMPT } from "../constants/prompt";
+import { BaseChatModel } from "@langchain/core/language_models/chat_models";
 
 export class TradingService {
   async executeTrading(tradeId: string, isTest: boolean) {
-    const model = new ChatOpenAI({
-      model: "gpt-4o-mini",
-    });
-    // const model = new ChatAnthropic({
-    //   model: 'claude-3-5-haiku-20241022',
-    //   apiKey: process.env.ANTHROPIC_API_KEY!,
-    //   temperature: 0.1
-    // })
 
     const tradeInfo = await AiTrading.findById(tradeId);
 
@@ -47,6 +40,25 @@ export class TradingService {
       exchangeService = new ExtendedExchangeService(user.upbitApiKey, user.upbitSecretKey);
     }
     tools.push(...getUpbitTools(exchangeService));
+
+    let model: BaseChatModel;
+
+    switch (tradeInfo.model) {
+      case "gpt":
+        model = new ChatOpenAI({
+          model: "gpt-4o-mini",
+        });
+        break;
+      case "claude":
+        model = new ChatAnthropic({
+          model: "claude-3-5-haiku-20241022",
+          apiKey: process.env.ANTHROPIC_API_KEY!,
+          temperature: 0.1,
+        });
+        break;
+      default:
+        throw new Error("해당하는 모델을 찾을 수 없습니다.");
+    }
 
     const agent = createReactAgent({
       llm: model,
