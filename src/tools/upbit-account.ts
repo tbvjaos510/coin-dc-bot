@@ -150,9 +150,13 @@ ${topCoins.map((coin, index) => `${index + 1}등. ${coin.market}`).join("\n")}`;
       price,
     });
 
+    const lastAccounts = await ubitExchangeService.getAllAccount();
+    const krAccount = lastAccounts.find(account => account.currency === "KRW");
+
     return `매수 주문 결과:
 마켓: ${result.market}
 체결금: ${Math.round(Number(result.executed_funds))}원
+남은 보유 원화: ${Math.floor(Number(krAccount?.balance))}원
 `;
   }, {
     name: "buy_coin",
@@ -188,7 +192,7 @@ ${topCoins.map((coin, index) => `${index + 1}등. ${coin.market}`).join("\n")}`;
     return `매도 주문 결과:
 마켓: ${result.market}
 채결금: ${Math.round(Number(result.executed_funds))}원
-보유 원화: ${Math.floor(Number(krAccount?.balance))}원
+남은 보유 원화: ${Math.floor(Number(krAccount?.balance))}원
   `;
   }, {
     name: "sell_coin",
