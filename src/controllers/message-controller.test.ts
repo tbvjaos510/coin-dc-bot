@@ -112,6 +112,7 @@ describe("MessageController Unit Tests", () => {
       await new AiTrading({
         userId: "test_user_id",
         userMessage: "테스트 메시지",
+        model: "gpt",
       }).save();
 
       const editFn = vi.fn();
@@ -149,6 +150,7 @@ describe("MessageController Unit Tests", () => {
       await new AiTrading({
         userId: "test_user_id",
         userMessage: "테스트 메시지",
+        model: "gpt",
       }).save();
 
       const editFn = vi.fn();

@@ -32,7 +32,9 @@ export class TradingCronService {
       Logger.info("init cron success count=" + Object.keys(this.crons).length);
     });
 
-    this.startTradeRankCron();
+    if (process.env.NODE_ENV !== "test") {
+      this.startTradeRankCron();
+    }
   }
 
   public async removeTradeCronByUserId(userId: string) {
@@ -70,11 +72,11 @@ export class TradingCronService {
   }
 
   getTradingCronsByCronTime(cronTime: string) {
-    return this.crons[cronTime]
+    return this.crons[cronTime];
   }
 
   private startTradeRankCron() {
-    const task = cron.schedule("0 0 * * *", async () => {
+    cron.schedule("0 0 * * *", async () => {
       const channels = await this.userService.getTradeUserChannels();
 
       for (const channelId of channels) {
@@ -88,11 +90,9 @@ export class TradingCronService {
       }
     }, {
       timezone: "Asia/Seoul",
+      name: "tradeRankCron",
+      scheduled: true
     });
-
-    if (process.env.NODE_ENV !== 'test') {
-      task.start();
-    }
   }
 
   private startCron(cronTime: string) {
@@ -165,9 +165,9 @@ export class TradingCronService {
       }
     }, {
       timezone: "Asia/Seoul",
+      name: `tradeCron-${cronTime}`,
+      scheduled: true,
     });
-
-    task.start();
 
     return task;
   }

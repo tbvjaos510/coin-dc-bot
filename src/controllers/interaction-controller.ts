@@ -80,7 +80,7 @@ export class InteractionController {
 
       if (cronTime) {
         cronTime = cronTime.split(",").map((time) => Number(time.trim())).join(",");
-        cronTime = `0 0 ${cronTime} * * *`;
+        cronTime = `0 ${cronTime} * * *`;
       }
 
       if (cronTime && !this.tradingCronService.validateCronTime(cronTime)) {

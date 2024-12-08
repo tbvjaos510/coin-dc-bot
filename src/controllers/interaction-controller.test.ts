@@ -123,6 +123,7 @@ describe("InteractionController Unit Tests", () => {
         userId: "test_user_id",
         userMessage: "test_message",
         cronTime: "0 0 1,2,3 * * *",
+        model: "gpt",
       }).save();
 
       await interactionController.openPromptSettingModal(interaction);
@@ -181,6 +182,7 @@ describe("InteractionController Unit Tests", () => {
         userId: "test_user_id",
         userMessage: "test_message",
         cronTime: "0 0 * * *",
+        model: "gpt",
       }).save();
 
       tradingCronService.addTradeCron(trading._id.toString(), "0 0 * * *");
@@ -322,6 +324,7 @@ describe("InteractionController Unit Tests", () => {
       interaction.fields.getTextInputValue = vi.fn().mockImplementation((field) => {
         if (field === "user_message") return "test_message";
         if (field === "cron") return "1,2,3";
+        if (field === "model") return "gpt";
         return "";
       });
 
@@ -340,9 +343,9 @@ describe("InteractionController Unit Tests", () => {
       const trading = await AiTrading.findOne({ userId: "test_user_id" });
       expect(trading).not.toBeNull();
       expect(trading?.userMessage).toBe("test_message");
-      expect(trading?.cronTime).toBe("0 0 1,2,3 * * *");
+      expect(trading?.cronTime).toBe("0 1,2,3 * * *");
       expect(interaction.reply).toHaveBeenCalledWith({
-        content: `<@test_user_id>님의 프롬프트 정보 등록이 완료되었습니다.\n프롬프트: \`\`\`test_message\`\`\`\n시간: 0 0 1,2,3 * * *`,
+        content: `<@test_user_id>님의 프롬프트 정보 등록이 완료되었습니다.\n프롬프트: \`\`\`test_message\`\`\`\n시간: 0 1,2,3 * * *`,
       });
     });
 
@@ -350,6 +353,7 @@ describe("InteractionController Unit Tests", () => {
       interaction.fields.getTextInputValue = vi.fn().mockImplementation((field) => {
         if (field === "user_message") return "test_message";
         if (field === "cron") return "1,2,3";
+        if (field === "model") return "claude";
         return "";
       });
 
@@ -367,6 +371,7 @@ describe("InteractionController Unit Tests", () => {
         userId: "test_user_id",
         userMessage: "old_test_message",
         cronTime: "0 0 4,5,6 * * *",
+        model: "gpt",
       }).save();
 
       tradingCronService.addTradeCron(exitingTrading._id.toString(), "0 0 4,5,6 * * *");
@@ -377,12 +382,13 @@ describe("InteractionController Unit Tests", () => {
 
       expect(trading).not.toBeNull();
       expect(trading?.userMessage).toBe("test_message");
-      expect(trading?.cronTime).toBe("0 0 1,2,3 * * *");
+      expect(trading?.model).toBe("claude");
+      expect(trading?.cronTime).toBe("0 1,2,3 * * *");
       expect(interaction.reply).toHaveBeenCalledWith({
-        content: `<@test_user_id>님의 프롬프트 정보 등록이 완료되었습니다.\n프롬프트: \`\`\`test_message\`\`\`\n시간: 0 0 1,2,3 * * *`,
+        content: `<@test_user_id>님의 프롬프트 정보 등록이 완료되었습니다.\n프롬프트: \`\`\`test_message\`\`\`\n시간: 0 1,2,3 * * *`,
       });
-      expect(tradingCronService.getTradingCronsByCronTime("0 0 4,5,6 * * *")).toBeUndefined();
-      expect(tradingCronService.getTradingCronsByCronTime("0 0 1,2,3 * * *")).not.toBeUndefined();
+      expect(tradingCronService.getTradingCronsByCronTime("0 4,5,6 * * *")).toBeUndefined();
+      expect(tradingCronService.getTradingCronsByCronTime("0 1,2,3 * * *")).not.toBeUndefined();
     });
 
     it("should handle error when cron time is invalid", async () => {
