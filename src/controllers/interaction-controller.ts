@@ -95,14 +95,14 @@ export class InteractionController {
 
       await this.tradingCronService.removeTradeCronByUserId(interaction.user.id);
 
-      await this.tradingService.upsertTradeInfo(interaction.user.id, {
+      const trade = await this.tradingService.upsertTradeInfoByUserId(interaction.user.id, {
         userMessage: interaction.fields.getTextInputValue("user_message"),
         cronTime: cronTime || undefined,
         model
       });
 
-      if (cronTime) {
-        this.tradingCronService.addTradeCron(interaction.user.id, cronTime);
+      if (trade && cronTime) {
+        this.tradingCronService.addTradeCron(trade._id, cronTime);
       }
 
       await interaction.reply({

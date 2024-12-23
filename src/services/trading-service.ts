@@ -102,7 +102,7 @@ export class TradingService {
     };
   }
 
-  async upsertTradeInfo(userId: string, tradeInfo: Partial<IAITrading>) {
+  async upsertTradeInfoByUserId(userId: string, tradeInfo: Partial<IAITrading>) {
     await AiTrading.updateOne({
       userId,
     }, {
@@ -110,6 +110,8 @@ export class TradingService {
     }, {
       upsert: true,
     });
+
+    return this.getTradeByUserId(userId);
   }
 
   async removeTradeInfoByUserId(userId: string) {
