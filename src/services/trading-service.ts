@@ -10,6 +10,7 @@ import { MockExchangeService } from "../containers/upbit-extended/mock-exchange-
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { SYSTEM_PROMPT } from "../constants/prompt";
 import { BaseChatModel } from "@langchain/core/language_models/chat_models";
+import { MODELS } from "../constants/model";
 
 export class TradingService {
   async executeTrading(tradeId: string, isTest: boolean) {
@@ -44,18 +45,25 @@ export class TradingService {
     let model: BaseChatModel;
 
     switch (tradeInfo.model) {
-      case "gpt":
+      case MODELS.GPT:
         model = new ChatOpenAI({
           model: "gpt-4o-mini",
         });
         break;
-      case "claude":
+      case MODELS.CLAUDE:
         model = new ChatAnthropic({
           model: "claude-3-5-haiku-20241022",
           apiKey: process.env.ANTHROPIC_API_KEY!,
-          temperature: 0.1,
         });
         break;
+      case MODELS.DEEP_SEEK:
+        model = new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.deepseek.com",
+            apiKey: process.env.DEEP_SEEK_API_KEY!,
+          },
+        });
+
       default:
         throw new Error("해당하는 모델을 찾을 수 없습니다.");
     }

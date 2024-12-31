@@ -6,6 +6,7 @@ import {
   TextInputStyle,
 } from "discord.js";
 import { IAITrading } from "../models/ai-tradings";
+import { MODELS } from "../constants/model";
 
 const cronToHours = (cron: string) => {
   return cron.split(" ")[2];
@@ -28,7 +29,7 @@ export const createPromptSettingModel = (defaultValue?: Partial<IAITrading>) => 
       new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
         new TextInputBuilder()
           .setCustomId("model")
-          .setLabel("사용할 모델 (gpt or claude)")
+          .setLabel(`사용할 모델 (${Object.values(MODELS).join(", ")})`)
           .setStyle(TextInputStyle.Short)
           .setPlaceholder("gpt")
           .setValue(defaultValue?.model ?? "gpt")

@@ -1,11 +1,12 @@
 import { model, Schema } from "mongoose";
+import { Model } from "../constants/model";
 
 export interface IAITrading {
   _id: string;
   userId: string;
   userMessage: string;
   cronTime?: string;
-  model?: 'gpt' | 'claude';
+  model?: Model;
   lastMessages?: any[];
 }
 

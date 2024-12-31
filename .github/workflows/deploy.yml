@@ -47,6 +47,7 @@ jobs:
         echo "SERVER_IP=${{ secrets.SERVER_IP }}" >> .env
         echo "MONGO_DB_NAME=${{ vars.MONGO_DB_NAME }}" >> .env
         echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> .env
+        echo "DEEP_SEEK_API_KEY=${{ secrets.DEEP_SEEK_API_KEY }}" >> .env
 
     - name: Deploy CDK
       run: |

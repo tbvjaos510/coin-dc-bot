@@ -5,6 +5,7 @@ import { TradingCronService } from "../services/trading-cron-service";
 import { createUserSettingModel } from "../discord/create-user-setting-model";
 import { createPromptSettingModel } from "../discord/create-prompt-setting-model";
 import { Logger } from "../utils/logger";
+import { MODELS } from "../constants/model";
 
 export class InteractionController {
   constructor(
@@ -89,8 +90,8 @@ export class InteractionController {
 
       const model = interaction.fields.getTextInputValue("model");
 
-      if (model !== "gpt" && model !== "claude") {
-        throw new Error("사용할 모델은 gpt 또는 claude 중 하나여야 합니다.");
+      if (Object.values(MODELS).indexOf(model) === -1) {
+        throw new Error(`사용할 모델은 ${Object.values(MODELS).join(", ")} 중 하나여야 합니다.`);
       }
 
       await this.tradingCronService.removeTradeCronByUserId(interaction.user.id);
@@ -98,7 +99,7 @@ export class InteractionController {
       const trade = await this.tradingService.upsertTradeInfoByUserId(interaction.user.id, {
         userMessage: interaction.fields.getTextInputValue("user_message"),
         cronTime: cronTime || undefined,
-        model
+        model,
       });
 
       if (trade && cronTime) {
