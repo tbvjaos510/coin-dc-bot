@@ -62,6 +62,7 @@ export class TradingService {
             baseURL: "https://api.deepseek.com",
             apiKey: process.env.DEEP_SEEK_API_KEY!,
           },
+          model: "deepseek-chat",
         });
         break;
       default:
