@@ -63,7 +63,7 @@ export class TradingService {
             apiKey: process.env.DEEP_SEEK_API_KEY!,
           },
         });
-
+        break;
       default:
         throw new Error("해당하는 모델을 찾을 수 없습니다.");
     }
